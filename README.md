@@ -1,7 +1,7 @@
 # Backend
 백앤드
 
-#📌 1. 실행 환경 준비
+# 📌 1. 실행 환경 준비
 
   1. Python 가상환경 생성 (venv)
        >>가상환경 설치
@@ -23,7 +23,7 @@
        ```bash
        pip install pymysql
        ```
-#📌 2. 실행 하기
+# 📌 2. 실행 하기
 
   1. 자신의 실행 환경에 맞는 DB정보로 변경
 
@@ -32,13 +32,15 @@
        python (실행하고자 하는 파일).py
        ```
 
-#📌 3. api테스트 방법
+# 📌 3. api테스트 방법
 
     pi_test.http에 적혀있음
     
-#📌 4. 폴더구조
+# 📌 4. 폴더구조
 ```bash
 Backend/
- ├── templates/            # HTML 템플릿
- └── README.md             # 실행 설명
+ ├── .vscode/   
+ ├── sql/
+ ├── templates/        
+ └── README.md            
 ```
