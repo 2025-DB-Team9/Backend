@@ -1,21 +1,9 @@
 from flask import Flask, request, jsonify
-import pymysql
+from db import get_connection
 
 
 app = Flask(__name__)
 app.json.ensure_ascii = False  # 한글 깨짐 방지
-
-
-def get_conn():
-    """MySQL 연결을 생성합니다."""
-    return pymysql.connect(
-        host="localhost",
-        user="root",
-        password="fooddb",
-        db="fooddb",
-        charset="utf8mb4",
-        cursorclass=pymysql.cursors.DictCursor,
-    )
 
 
 # =========================================================
@@ -28,7 +16,7 @@ def get_store(store_id):
     매장 정보 수정 페이지에 들어갈 때,
     선택한 매장의 현재 정보를 조회하여 반환합니다.
     """
-    conn = get_conn()
+    conn = get_connection()
     try:
         with conn.cursor() as cur:
             sql = """
@@ -81,7 +69,7 @@ def update_store(store_id):
             400,
         )
 
-    conn = get_conn()
+    conn = get_connection()
     try:
         with conn.cursor() as cur:
             # 매장 존재 여부 확인
@@ -152,7 +140,7 @@ def delete_store(store_id):
     매장 정보 수정 페이지에서 삭제 버튼을 눌렀을 때,
     해당 매장을 데이터베이스에서 제거합니다.
     """
-    conn = get_conn()
+    conn = get_connection()
     try:
         with conn.cursor() as cur:
             # 매장 존재 여부 확인
