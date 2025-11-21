@@ -21,6 +21,10 @@ CREATE TABLE `category` (
 INSERT INTO `category` (`name`)
 VALUES ('한식'), ('중식'), ('양식'), ('일식'), ('분식'), ('카페'), ('디저트');
 
+INSERT INTO category (category_id, name)
+VALUES (1, '한식'),(2,'중식'),(3,'양식'),(4,'일식'),(5,'분식'),(6,'카페'),(7,'디저트');
+
+
 DROP TABLE IF EXISTS `app_user`;
 CREATE TABLE `app_user` (
   `user_id`    INT NOT NULL AUTO_INCREMENT COMMENT '사용자의 id',
@@ -55,11 +59,19 @@ CREATE TABLE `store` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 샘플 매장(선택)
-INSERT INTO `store` (name, address, open_time, close_time, phone, distance_km, category_id)
-VALUES
-('철수네 김치찌개', '경기 시흥시 정왕동 1', '10:00','22:00','010-1111-2222', 0.8, 1),
-('진짜짜장',      '경기 시흥시 정왕동 2', '11:00','21:30','010-3333-4444', 1.2, 2),
-('파스타비',       '경기 시흥시 정왕동 3', '11:30','22:30','010-5555-6666', 1.8, 3);
+INSERT INTO store (name, address, open_time, close_time, phone, distance_km, category_id)
+VALUES ('금성이네', '경기 시흥시 정왕동 ', '16:00','01:00','010-9092-4992', 0.5, 1),
+		( '쭈꾸미삼겹살', '경기 시흥시 정왕동 ', '11:00','01:00','050-4110-8859', 0.6, 1   ),
+        ( '24시 수육국밥', '경기 시흥시 정왕동 ', '00:00','24:00','031-319-8676', 0.9, 1   ),
+         ( '고향 칼국수', '경기 시흥시 정왕동 ', '11:00','20:00','031-499-7374', 1.0, 1   ),
+           ( '국민 낙곱새', '경기 시흥시 정왕동 ', '14:00','03:00','031-433-9284', 1.0, 1   ),
+           ( '더베이징', '경기 시흥시 정왕동 ', '11:00','21:30','031-319-4289', 0.2, 2   ),
+            ( '라홍방 마라탕', '경기 시흥시 정왕동 ', '10:00','22:20','031-498-4776', 0.5, 2   ),
+            ( '회전훠쿼핫', '경기 시흥시 정왕동 ', '11:00','22:20','0507-1349-3305', 0.7, 2   ),
+             ( '짬뽕관', '경기 시흥시 정왕동 ', '10:30','21:30','010-9282-1633', 0.8, 2   ),
+             ( '니뽕내뽕', '경기 시흥시 정왕동 ', '11:00','19:50','031-431-3564', 1.0, 2   )
+             
+           ;
 
 -- =========================================================
 -- 핵심 2) menu
@@ -80,14 +92,56 @@ CREATE TABLE `menu` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 샘플 메뉴(선택)
-INSERT INTO `menu` (store_id, name, price, recommend)
-VALUES
-(1, '김치찌개', 9000, '보통맵기'),
-(1, '제육볶음', 9500, NULL),
-(2, '짜장면',   7000, '곱빼기'),
-(2, '짬뽕',     8000, NULL),
-(3, '봉골레',  14000, NULL),
-(3, '알리오올리오', 12000, '추천');
+INSERT INTO menu (store_id, name, price) VALUES
+-- 1. 금성이네 (한식)
+(1, '김치찌개', 8000),
+(1, '된장찌개', 8000),
+(1, '삼겹살 1인분', 14000),
+
+-- 2. 쭈꾸미삼겹살 (한식)
+(2, '쭈꾸미볶음', 11000),
+(2, '삼겹살추가', 7000),
+(2, '볶음밥', 3000),
+
+-- 3. 24시 수육국밥 (한식)
+(3, '수육국밥', 9000),
+(3, '모듬수육', 18000),
+(3, '콩나물국밥', 8000),
+
+-- 4. 고향 칼국수 (한식)
+(4, '바지락칼국수', 9000),
+(4, '들깨칼국수', 9500),
+(4, '파전', 12000),
+
+-- 5. 국민 낙곱새 (한식)
+(5, '낙곱새', 12000),
+(5, '곱창전골', 13000),
+(5, '볶음밥', 3000),
+
+-- 6. 더베이징 (중식)
+(6, '짜장면', 7000),
+(6, '짬뽕', 8000),
+(6, '탕수육', 16000),
+
+-- 7. 라홍방 마라탕 (중식)
+(7, '마라탕', 12000),
+(7, '마라샹궈', 16000),
+(7, '꿔바로우', 15000),
+
+-- 8. 회전훠궈핫 (중식)
+(8, '훠궈 1인세트', 17000),
+(8, '마라훠궈', 18000),
+(8, '양꼬치', 13000),
+
+-- 9. 짬뽕관 (중식)
+(9, '불짬뽕', 9000),
+(9, '차돌짬뽕', 10000),
+(9, '군만두', 5000),
+
+-- 10. 니뽕내뽕 (중식 퓨전)
+(10, '니뽕짬뽕', 9800),
+(10, '크림뽕', 10500),
+(10, '로제뽕', 10800);
 
 -- =========================================================
 -- 핵심 3) review
@@ -136,7 +190,8 @@ SELECT
   COUNT(r.review_id)                   AS review_cnt
 FROM store s
 LEFT JOIN review r ON r.store_id = s.store_id
-GROUP BY s.store_id;
+GROUP BY s.store_id, s.name, s.address, s.distance_km;
+
 
 -- 2) 베이지안 평균(전체 평균으로 스무딩: m=리뷰수 임계값) 계산용 뷰
 --   score = (v/(v+m))*R + (m/(v+m))*C
@@ -158,7 +213,8 @@ store_stats AS (
     COUNT(r.review_id)         AS v
   FROM store s
   LEFT JOIN review r ON r.store_id = s.store_id
-  GROUP BY s.store_id
+  GROUP BY s.store_id, s.name, s.address, s.distance_km;
+
 )
 SELECT
   st.store_id,
@@ -185,11 +241,12 @@ SELECT
   b.avg_rating,
   b.review_cnt,
   b.bayes_score
-FROM v_store_scores_bayesian b
-ORDER BY b.bayes_score DESC, b.review_cnt DESC, b.avg_rating DESC, b.store_id ASC;
+FROM v_store_scores_bayesian b;
+-- ORDER BY b.bayes_score DESC, b.review_cnt DESC, b.avg_rating DESC, b.store_id ASC;
 
 
 
-USE fooddb;
-SHOW TABLES;
-SELECT * FROM  v_store_ranking LIMIT 5;
+SELECT * FROM v_store_ranking
+ORDER BY bayes_score DESC
+LIMIT 5;
+
