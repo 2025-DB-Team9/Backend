@@ -19,7 +19,7 @@ body {
 .top-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   padding: 16px 24px;
   background-color: #ffffff;
   border-bottom: 1px solid #dadce0;
@@ -31,7 +31,7 @@ body {
 
 .nav-left {
   display: flex;
-
+  align-items: center;
   gap: 16px;
   flex: 1;
 }
@@ -102,8 +102,6 @@ body {
   align-items: center;
   gap: 8px;
   margin-left: 16px;
-  position: absolute;
-  right: 24px;
 }
 
 .publish-btn {
