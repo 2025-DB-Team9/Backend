@@ -234,6 +234,11 @@ body {
   opacity: 1;
 }
 
+/* 왼쪽 보라색 강조선 제거 (검색 페이지 등) */
+.question-card.no-hover-border::before {
+  display: none;
+}
+
 .question-drag-handle {
   display: flex;
   align-items: flex-start;

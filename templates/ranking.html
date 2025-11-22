@@ -32,10 +32,11 @@
 
     <!-- 메인 콘텐츠 영역 -->
     <div class="main-content">
-      <!-- 탭 메뉴 (랭킹 / 문의 / 기타…) 필요하면 확장 -->
+      <!-- 탭 메뉴 (랭킹 / 문의 / 관리자) -->
       <div class="tab-menu">
         <button class="tab-btn active">랭킹</button>
         <button class="tab-btn" id="inquiry-tab">문의</button>
+        <button class="tab-btn" id="admin-tab">관리자</button>
       </div>
 
       <!-- 폼 컨테이너 -->
@@ -164,6 +165,9 @@
       document.getElementById("inquiry-tab").addEventListener("click", () => {
         //window.location.href = "inquiry.html";
         window.location.href = "/inquiry";
+      });
+      document.getElementById("admin-tab").addEventListener("click", () => {
+        window.location.href = "/admin/store/search";
       });
     </script>
   </body>
