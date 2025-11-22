@@ -1,53 +1,199 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>로그인</title>
+    <link rel="stylesheet" href="/static/google_form_style.css" />
+
+    <style>
+        body {
+            background: #f8f5ff;
+            margin: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+
+        /* 구글폼 상단바 느낌 */
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-title-text {
+            font-size: 20px;
+            margin-left: 10px;
+            font-weight: 500;
+            color: #5e35b1;
+        }
+
+        /* 메인 로그인 카드 */
+        .form-container {
+            max-width: 640px;
+            margin: 40px auto;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px 40px 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        /* 탭 스타일 */
+        .tab-header {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px;
+            background: #eee5ff;   /* 연보라 */
+            border: none;
+            font-size: 17px;
+            cursor: pointer;
+            font-weight: 500;
+            color: #5e35b1;
+        }
+
+        .tab-btn.active {
+            background: #673ab7;  /* 진보라 */
+            color: white;
+        }
+
+        /* input 스타일 */
+        label {
+            display: block;
+            font-size: 15px;
+            margin-top: 20px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #7e57c2; /* 보라 포커스 */
+        }
+
+        /* 로그인 버튼 */
+        .login-btn {
+            width: 100%;
+            margin-top: 26px;
+            padding: 15px;
+            background: #673ab7; /* 보라 */
+            color: white;
+            font-size: 17px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #5e35b1;
+        }
+
+        /* 회원가입 링크 */
+        .signup-area {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+        }
+
+        .signup-area a {
+            color: #673ab7;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .signup-area a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>학생 / 사장 로그인</h2>
+    <!-- 상단 네비바 -->
+    <header class="top-nav">
+        <div class="nav-left">
+            <svg width="32" height="32" fill="#673ab7" viewBox="0 0 24 24">
+                <path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2
+                2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0
+                16H5V5h14v14z"></path>
+            </svg>
+            <span class="form-title-text">로그인</span>
+        </div>
+    </header>
 
-<form action="/login" method="post">
-    <p>로그인 아이디:
-        <input type="text" name="login_id" required>
-    </p>
+    <main class="form-container">
+        <div class="login-card">
 
-    <p>비밀번호:
-        <input type="password" name="pw" required>
-    </p>
+            <!-- 탭 -->
+            <div class="tab-header">
+                <button class="tab-btn active" id="userTab">사용자</button>
+                <button class="tab-btn" id="adminTab">관리자</button>
+            </div>
 
-    <button type="submit">로그인</button>
-</form>
+            <!-- 로그인 폼 -->
+            <form method="POST" id="loginForm">
 
-</body>
-</html>
-🔷 Step 3 — admin_login.html (관리자 전용 로그인)
-templates/admin_login.html
+                <h2 style="margin-bottom: 10px; color:#5e35b1;">로그인</h2>
 
-html
-코드 복사
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <title>관리자 로그인</title>
-</head>
-<body>
+                <label>ID</label>
+                <input type="text" name="login_id" placeholder="아이디 입력" required />
 
-<h2>관리자 로그인</h2>
+                <label>PW</label>
+                <input type="password" name="pw" placeholder="비밀번호 입력" required />
 
-<form action="/admin_login" method="post">
-    <p>관리자 아이디:
-        <input type="text" name="login_id" required>
-    </p>
+                <input type="hidden" name="type" id="userType" value="user">
 
-    <p>비밀번호:
-        <input type="password" name="pw" required>
-    </p>
+                <button class="login-btn" type="submit">로그인</button>
+            </form>
 
-    <button type="submit">로그인</button>
-</form>
+            <div class="signup-area">
+                <span>아직 계정이 없나요?</span>
+                <a href="/register">회원가입</a>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const userTab = document.getElementById("userTab");
+        const adminTab = document.getElementById("adminTab");
+        const userType = document.getElementById("userType");
+
+        userTab.addEventListener("click", () => {
+            userTab.classList.add("active");
+            adminTab.classList.remove("active");
+            userType.value = "user";
+        });
+
+        adminTab.addEventListener("click", () => {
+            adminTab.classList.add("active");
+            userTab.classList.remove("active");
+            userType.value = "admin";
+        });
+    </script>
 
 </body>
 </html>

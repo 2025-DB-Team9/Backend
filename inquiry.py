@@ -12,7 +12,7 @@ def get_conn():
     return pymysql.connect(
         host='localhost',
         user='food',
-        password='fooddb',  
+        password='root',  
         db='fooddb',
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
