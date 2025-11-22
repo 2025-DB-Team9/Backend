@@ -121,6 +121,12 @@ def ranking_page():
     return render_template('ranking.html')
 
 
+@app.route('/ranking/store_info/<int:store_id>')
+def store_detail_page(store_id):
+    """매장 상세 정보 페이지"""
+    return render_template('store_detail.html', store_id=store_id)
+
+
 # ⚠️ 모든 라우트 정의가 끝난 뒤에!
 if __name__ == "__main__":
     app.run(debug=True)

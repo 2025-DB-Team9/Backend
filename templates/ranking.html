@@ -107,6 +107,7 @@
           data.forEach((store, index) => {
             const card = document.createElement("div");
             card.className = "question-card";
+            card.style.cursor = "pointer";
 
             card.innerHTML = `
             <div class="question-content">
@@ -136,6 +137,11 @@
               </div>
             </div>
           `;
+
+            // 카드 클릭 시 상세 정보 페이지로 이동
+            card.addEventListener("click", () => {
+              window.location.href = `/ranking/store_info/${store.store_id}`;
+            });
 
             rankListEl.appendChild(card);
           });
