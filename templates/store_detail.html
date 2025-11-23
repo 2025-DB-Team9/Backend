@@ -310,12 +310,7 @@
         document
           .getElementById("back-btn-inline")
           .addEventListener("click", () => {
-            // 관리자일 경우 매장 검색 페이지로, 일반 사용자일 경우 랭킹 페이지로
-            if (isAdmin) {
-              window.location.href = "/admin/store/search";
-            } else {
-              window.location.href = "/ranking";
-            }
+            window.location.href = "/ranking";
           });
 
         // ✅ 매장 정보 수정 버튼 클릭
