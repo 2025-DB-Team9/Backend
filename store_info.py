@@ -128,4 +128,3 @@ def get_store_detail(store_id):
         conn.close()
     
     return jsonify(result), 200
-

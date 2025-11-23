@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/static/Home.css" />
     <link rel="stylesheet" href="/static/store_search.css" />
-    <link rel="stylesheet" href="/static/form-style.css" />
   </head>
   <body>
     <header class="top-nav">
@@ -23,65 +22,37 @@
         </div>
       </div>
     </header>
-    <!-- 메인 콘텐츠 영역 -->
-    <div class="main-content">
-      <!-- 탭 메뉴 (랭킹 / 문의 / 관리자) -->
-      <div class="tab-menu">
-        <button class="tab-btn" id="rank-tab">랭킹</button>
-        <button class="tab-btn" id="inquiry-tab">문의</button>
-        <button class="tab-btn active">관리자</button>
-      </div>
-
-      <!-- 폼 컨테이너 -->
-      <div class="form-container">
-        <!-- 검색 폼 카드 (설명과 검색창을 하나의 박스에) -->
-        <div class="question-card no-hover-border">
-          <div class="question-content">
-            <!-- 제목과 설명 -->
-            <div class="question-header">
-              <div class="question-title-input" style="border-bottom: none">
-                <h1>수정할 매장 검색</h1>
-              </div>
+    <main class="search-main">
+      <div class="search-container">
+        <div class="search-title">수정할 매장 검색</div>
+        <form id="search-form" class="search-form">
+          <div class="search-wrapper">
+            <div class="search-box">
+              <svg
+                class="search-icon"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                />
+              </svg>
+              <input
+                type="text"
+                id="search-input"
+                class="search-input"
+                placeholder="매장명을 검색하세요"
+                autocomplete="off"
+              />
             </div>
-            <!-- <div class="question-options">
-              <div class="option-item">
-                <span style="color: #5f6368; font-size: 14px;">
-                  매장명을 검색하여 수정할 매장을 찾아주세요.
-                </span>
-              </div>
-            </div> -->
-
-            <!-- 검색 폼 -->
-            <form id="search-form" class="search-form">
-              <div class="search-wrapper">
-                <div class="search-box">
-                  <svg
-                    class="search-icon"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <path
-                      d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-                    />
-                  </svg>
-                  <input
-                    type="text"
-                    id="search-input"
-                    class="search-input"
-                    placeholder="매장명을 검색하세요"
-                    autocomplete="off"
-                  />
-                </div>
-                <button type="submit" class="search-btn">검색</button>
-              </div>
-            </form>
-            <div id="search-message" class="search-message"></div>
+            <button type="submit" class="search-btn">검색</button>
           </div>
-        </div>
+        </form>
+        <div id="search-message" class="search-message"></div>
       </div>
-    </div>
+    </main>
     <script>
       document
         .getElementById("search-form")
@@ -128,14 +99,6 @@
             msgEl.style.color = "#d93025";
           }
         });
-
-      // 탭 메뉴 네비게이션
-      document.getElementById("rank-tab").addEventListener("click", () => {
-        window.location.href = "/ranking";
-      });
-      document.getElementById("inquiry-tab").addEventListener("click", () => {
-        window.location.href = "/inquiry";
-      });
     </script>
   </body>
 </html>

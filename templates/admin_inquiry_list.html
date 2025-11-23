@@ -1,52 +1,103 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>문의 목록 (관리자)</title>
+  <meta charset="UTF-8" />
+  <title>전체 문의 목록</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/form-style.css') }}" />
 </head>
 <body>
 
-<h1>문의 목록 (관리자)</h1>
+  <!-- 상단 네비 -->
+  <div class="top-nav">
+    <div class="nav-left">
+      <div class="form-icon"><strong>📄</strong></div>
+      <div class="form-title-group">
+        <div class="form-title-text">전체 문의 관리</div>
+      </div>
+    </div>
 
-<table border="1" cellspacing="0" cellpadding="5">
-    <thead>
-        <tr>
-            <th>번호</th>
-            <th>제목</th>
-            <th>작성자</th>
-            <th>분야</th>
-            <th>작성일</th>
-            <th>답변여부</th>
-            <th>관리</th>
-        </tr>
-    </thead>
-    <tbody>
-    {% for q in inquiries %}
-        <tr>
-            <td>{{ q.inquiry_id }}</td>
-            <td>{{ q.title }}</td>
-            <td>{{ q.writer or '-' }}</td>
-            <td>{{ q.field or '-' }}</td>
-            <td>{{ q.created_at }}</td>
-            <td>
-                {% if q.answer %}
-                    완료
-                {% else %}
-                    미답변
-                {% endif %}
-            </td>
-            <td>
-                <a href="/admin/inquiries/{{ q.inquiry_id }}">상세/답변</a>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+    <div class="nav-center"></div>
 
-<p>
-    <!-- 나중에 메인 페이지 생기면 그 링크로 바꾸면 됨 -->
-    <a href="/inquiry">사용자 문의 작성 페이지로</a>
-</p>
+    <div class="nav-right">
+      <button class="publish-btn" onclick="location.href='/ranking'">랭킹 보기</button>
+      <div class="profile-icon">A</div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="tab-menu">
+      <button class="tab-btn" onclick="location.href='/ranking'">랭킹</button>
+      <button class="tab-btn active">문의</button>
+    </div>
+
+    <div class="form-container">
+      <div class="form-card">
+        <p><strong>전체 문의 목록</strong></p>
+
+        <table class="styled-table" style="margin-top: 16px; width: 100%;">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th>작성자</th>
+              <th>분야</th>
+              <th>작성일</th>
+              <th>답변</th>
+            </tr>
+          </thead>
+          <tbody id="inquiry-table-body">
+            <!-- JS가 여기다가 행 추가함 -->
+          </tbody>
+        </table>
+
+        <div id="msg" style="margin-top: 12px; color: #5f6368;"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+async function loadInquiries() {
+  const API = "http://localhost:5000/api/inquiries_all";
+
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      msg.textContent = "목록 데이터를 불러오지 못했습니다.";
+      return;
+    }
+
+    const tbody = document.getElementById("inquiry-table-body");
+    tbody.innerHTML = "";
+
+    data.forEach(row => {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${row.inquiry_id}</td>
+        <td style="cursor:pointer; color:#1a73e8;"
+            onclick="location.href='/admin_inquiry_detail?id=${row.inquiry_id}'">
+            ${row.title}
+        </td>
+        <td>${row.writer}</td>
+        <td>${row.field || "-"}</td>
+        <td>${row.created_at}</td>
+        <td>${row.answer ? "완료" : "대기"}</td>
+      `;
+
+      tbody.appendChild(tr);
+    });
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("msg").textContent = "오류가 발생했습니다.";
+  }
+}
+
+// 페이지 로드시 목록 불러오기
+loadInquiries();
+</script>
 
 </body>
 </html>

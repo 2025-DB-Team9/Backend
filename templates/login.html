@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>로그인</title>
-    <link rel="stylesheet" href="/static/google_form_style.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form-style.css') }}">
 
     <style>
         body {
@@ -12,8 +12,6 @@
             margin: 0;
             font-family: 'Noto Sans KR', sans-serif;
         }
-
-        /* 구글폼 상단바 느낌 */
         .top-nav {
             display: flex;
             align-items: center;
@@ -34,8 +32,6 @@
             font-weight: 500;
             color: #5e35b1;
         }
-
-        /* 메인 로그인 카드 */
         .form-container {
             max-width: 640px;
             margin: 40px auto;
@@ -47,8 +43,6 @@
             padding: 40px 40px 50px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.12);
         }
-
-        /* 탭 스타일 */
         .tab-header {
             display: flex;
             margin-bottom: 20px;
@@ -58,7 +52,9 @@
         .tab-btn {
             flex: 1;
             padding: 14px;
-            background: #eee5ff;   /* 연보라 */
+
+            background: #eee5ff;
+
             border: none;
             font-size: 17px;
             cursor: pointer;
@@ -67,11 +63,11 @@
         }
 
         .tab-btn.active {
-            background: #673ab7;  /* 진보라 */
+            background: #673ab7;
             color: white;
         }
 
-        /* input 스타일 */
+
         label {
             display: block;
             font-size: 15px;
@@ -91,15 +87,17 @@
         }
 
         input:focus {
-            border-color: #7e57c2; /* 보라 포커스 */
+            border-color: #7e57c2;
         }
 
-        /* 로그인 버튼 */
+
         .login-btn {
             width: 100%;
             margin-top: 26px;
             padding: 15px;
-            background: #673ab7; /* 보라 */
+
+            background: #673ab7;
+
             color: white;
             font-size: 17px;
             border: none;
@@ -111,7 +109,7 @@
             background: #5e35b1;
         }
 
-        /* 회원가입 링크 */
+
         .signup-area {
             text-align: center;
             margin-top: 18px;
@@ -154,7 +152,8 @@
             </div>
 
             <!-- 로그인 폼 -->
-            <form method="POST" id="loginForm">
+            <!-- 🔥 method/action 제거, id만 유지 -->
+            <form id="loginForm">
 
                 <h2 style="margin-bottom: 10px; color:#5e35b1;">로그인</h2>
 
@@ -181,7 +180,9 @@
         const userTab = document.getElementById("userTab");
         const adminTab = document.getElementById("adminTab");
         const userType = document.getElementById("userType");
+        const loginForm = document.getElementById("loginForm");
 
+        // 탭 전환
         userTab.addEventListener("click", () => {
             userTab.classList.add("active");
             adminTab.classList.remove("active");
@@ -192,6 +193,59 @@
             adminTab.classList.add("active");
             userTab.classList.remove("active");
             userType.value = "admin";
+        });
+
+        // 🔥 로그인 submit을 JS로 처리
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();  // /login.html로 POST 날아가는 것 막기
+
+            const login_id = loginForm.querySelector('input[name="login_id"]').value;
+            const pw = loginForm.querySelector('input[name="pw"]').value;
+            const type = userType.value;   // "user" or "admin"
+
+            // 사용자 / 관리자에 따라 호출할 API 다르게
+            const url = (type === "admin") ? "/api/admin/login" : "/api/login";
+
+            try {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        login_id: login_id,
+                        password: pw
+                    })
+                });
+
+                const data = await res.json().catch(() => ({}));
+
+                if (!res.ok) {
+                    alert(data.message || "로그인에 실패했습니다.");
+                    return;
+                }
+
+                // 토큰 / 유저정보 저장 (문의/랭킹에서 사용)
+                if (type === "admin") {
+                   // localStorage.setItem("admin_token", data.token);
+                    localStorage.setItem("isAdmin", "true");
+                    localStorage.setItem("adminId", data.admin.admin_id);
+                    localStorage.setItem("admin_name", data.admin.admin_name);
+                    alert("관리자 로그인 성공!");
+                    // 관리자용 페이지가 따로 있으면 여기로 변경
+                    window.location.href = "/admin_inquiry_list";
+                } else {
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("user_id", data.user.user_id);
+                    localStorage.setItem("user_name", data.user.name);
+                    alert("로그인 성공!");
+                    window.location.href = "/ranking";
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("서버 오류가 발생했습니다.");
+            }
         });
     </script>
 
