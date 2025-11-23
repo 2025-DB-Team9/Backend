@@ -7,7 +7,7 @@
 </head>
 <body>
 
-  <!-- 상단 네비 -->
+ 
   <div class="top-nav">
     <div class="nav-left">
       <div class="form-icon"><strong>📄</strong></div>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="form-container">
-      <!-- 문의 제목 카드 -->
+     
       <div class="form-card">
         <div class="form-header">
           <input id="title" class="form-title-input" type="text" value="" readonly />
@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <!-- 내용 & 답변 -->
+      
       <div class="form-card">
         <p><strong>문의 내용</strong></p>
         <p id="content" style="margin: 12px 0 20px 0;"></p>
@@ -133,7 +133,7 @@
       msgEl.textContent = "답변이 저장되었습니다.";
       alert("저장 완료!");
       
-      // 저장 후 문의 목록으로 이동
+     
       window.location.href = "/admin_inquiry_list";
 
     } catch (err) {
@@ -144,7 +144,7 @@
 
   document.getElementById("save-btn").addEventListener("click", saveAnswer);
 
-  // 페이지 로딩
+  
   loadInquiry();
 
   // 로그아웃 기능

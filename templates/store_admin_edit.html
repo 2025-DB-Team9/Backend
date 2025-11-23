@@ -53,12 +53,12 @@
     <script>
       const STORE_ID = {{ store_id|default(1) }};
       
-      // 뒤로가기 시 매장 검색 페이지로 이동하도록 설정
+      
       window.addEventListener('popstate', function(event) {
         window.location.href = '/admin/store/search';
       });
       
-      // 페이지 로드 시 히스토리에 매장 검색 페이지 추가
+      
       history.pushState({ page: 'store_edit' }, '', window.location.href);
       
       async function loadStoreInfo() {
@@ -78,15 +78,14 @@
           const data = await res.json();
           console.log('받은 데이터:', data);
           
-          // API 필드명과 HTML 필드명 매핑
-          // API는 'open', 'close'를 반환하지만 HTML은 'open', 'close'를 사용
+         
           document.getElementById('name').value = data.name || '';
           document.getElementById('address').value = data.address || '';
           document.getElementById('open').value = data.open || '';
           document.getElementById('close').value = data.close || '';
           document.getElementById('phone').value = data.phone || '';
           
-          // 성공 시 메시지 영역 초기화
+          
           document.getElementById('msgArea').textContent = '';
         } catch(e) {
           console.error('로드 오류:', e);
@@ -110,7 +109,7 @@
         const result = await res.json();
         if(res.ok) {
           alert('수정되었습니다');
-          // 수정 완료 후 매장 상세 페이지로 이동 (캐시 무시를 위해 타임스탬프 추가)
+          // 수정 완료 후 매장 상세 페이지로 이동 
           window.location.href = `/ranking/store_info/${STORE_ID}?t=${Date.now()}`;
         } else {
           document.getElementById('msgArea').textContent = result.error || '수정 실패';

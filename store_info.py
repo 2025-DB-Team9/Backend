@@ -74,7 +74,7 @@ def get_store_detail(store_id):
             """, (store_id,))
             menus = cur.fetchall()
             
-            # 4. 최근 리뷰 목록 조회 (최대 10개)
+            # 4. 최근 리뷰 목록 조회 
             cur.execute("""
                 SELECT 
                     review_id,
@@ -90,12 +90,12 @@ def get_store_detail(store_id):
             """, (store_id,))
             reviews = cur.fetchall()
             
-            # datetime → 문자열로 변환
+            
             for review in reviews:
                 if isinstance(review.get("created_at"), datetime):
                     review["created_at"] = review["created_at"].strftime("%Y-%m-%d %H:%M:%S")
             
-            # open_time, close_time이 timedelta인 경우 문자열로 변환
+           
             if isinstance(store_info.get("open_time"), timedelta):
                 total_seconds = store_info["open_time"].seconds
                 hours = total_seconds // 3600

@@ -13,9 +13,9 @@ from db import get_connection
 
 app = Flask(
     __name__,
-    template_folder='html',   # ← login.html, admin_login.html 있는 폴더
-    static_folder='html',     # ← ranking.html 같은 정적 페이지도 같은 폴더에서
-    static_url_path='/'       # ← /ranking.html 이런 식으로 접근 가능
+    template_folder='html',   
+    static_folder='html',     
+    static_url_path='/'       
 )
 
 
@@ -33,7 +33,7 @@ def login_tab():
 # ==========================
 @app.route('/login')
 def login_page():
-    return render_template('login.html')  # 혹시 직접 접근할 경우용
+    return render_template('login.html')  
 
 
 @app.route('/login', methods=['POST'])
@@ -53,14 +53,13 @@ def login():
 
     if not user:
         return "<h2>로그인 실패: 아이디 또는 비밀번호 오류</h2>"
-    # 🔥 사용자 탭에서 관리자 계정 로그인 시 차단
-# 🔥 학생 로그인 → ranking.html 이동
+
     # ================================
     if user['student_id'] is not None:
         return redirect("/ranking.html")
 
     # ================================
-    # 🔥 사장 로그인 → ranking.html 이동
+    #  사장 로그인
     # ================================
     if user['pro_id'] is not None:
         return redirect("/ranking.html")
@@ -72,7 +71,7 @@ def login():
 # ==========================
 @app.route('/admin_login')
 def admin_login_page():
-    return render_template('admin_login.html')  # 혹시 직접 접근할 경우용
+    return render_template('admin_login.html') 
 
 
 @app.route('/admin_login', methods=['POST'])

@@ -15,14 +15,11 @@ from store_info import bp as store_info_bp
 from store_admin import bp as store_admin_bp
 
 
-# ======================
-# Flask 기본 설정
-# ======================
-# 기존에 사용하던 static 설정 그대로 유지
-app = Flask(__name__)
-CORS(app)  # 프론트와 포트 달라도 요청 가능하게
 
-app.config['SECRET_KEY'] = 'login'  # 나중에 더 복잡한 문자열로 바꿔도 됨
+app = Flask(__name__)
+CORS(app) 
+
+app.config['SECRET_KEY'] = 'login'  
 
 # Blueprint 등록
 app.register_blueprint(store_info_bp)
@@ -40,7 +37,7 @@ def create_token(user_id, name, role=None):
         'exp': datetime.utcnow() + timedelta(hours=6)
     }
     token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
-    # PyJWT 버전에 따라 bytes 로 나올 수도 있어서 처리
+    
     if isinstance(token, bytes):
         token = token.decode('utf-8')
     return token
@@ -68,11 +65,11 @@ def convert_decimal(rows):
 # ======================
 @app.route("/api/rank", methods=["GET"])
 def api_rank():
-    # 쿼리스트링에서 값 받기
+   
     limit = int(request.args.get("limit", 10))
     offset = int(request.args.get("offset", 0))
     min_reviews = int(request.args.get("min_reviews", 0))
-    use_adv = request.args.get("use_adv", "1") == "1"  # "1"이면 True
+    use_adv = request.args.get("use_adv", "1") == "1" 
 
     rows = get_rank(limit=limit,
                     offset=offset,
@@ -87,7 +84,7 @@ def api_rank():
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        # CORS preflight(OPTIONS)는 토큰 검사 없이 통과
+       
         if request.method == "OPTIONS":
             return "", 200
 
@@ -110,7 +107,7 @@ def login_required(f):
         name = payload.get("name")
         role = payload.get("role")
 
-        # 관리자 토큰(site_admin용) 같은 건 여기서 막아버림
+       
         if user_id is None or name is None:
             return jsonify({"message": "유효하지 않은 사용자 토큰입니다."}), 401
 
@@ -126,7 +123,7 @@ def login_required(f):
 def admin_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        # PUT 요청 CORS preflight(OPTIONS) 통과
+        
         if request.method == "OPTIONS":
             return "", 200
 
@@ -206,14 +203,14 @@ def user_login():
 @app.route("/api/inquiries", methods=["POST", "OPTIONS"])
 @login_required
 def create_inquiry():
-    # preflight(OPTIONS) 요청 오면 바로 통과
+    
     if request.method == "OPTIONS":
         return "", 200
 
     data = request.get_json() or {}
 
     user_id = g.user_id
-    writer = g.user_name   # 프론트에서 writer 안 받아도 됨
+    writer = g.user_name   
     title = data.get("title")
     field = data.get("field")
     content = data.get("content")
@@ -243,8 +240,7 @@ def create_inquiry():
 @app.route("/api/inquiries", methods=["GET"])
 @login_required
 def list_inquiries():
-    # 쿼리 파라미터에 user_id를 넘겨도 되지만,
-    # 기본은 "내 문의 목록"이 되도록 토큰의 user_id 사용
+    
     user_id_param = request.args.get("user_id", type=int)
     user_id = user_id_param if user_id_param is not None else g.user_id
 
@@ -268,7 +264,7 @@ def list_inquiries():
             cur.execute(sql, (user_id,))
             rows = cur.fetchall()
 
-            # datetime → 문자열로 변환
+           
             for r in rows:
                 if isinstance(r.get("created_at"), datetime):
                     r["created_at"] = r["created_at"].strftime("%Y-%m-%d %H:%M:%S")
@@ -301,21 +297,21 @@ def get_inquiry_detail(inquiry_id):
     if not inquiry:
         return jsonify({"error": "문의가 존재하지 않습니다."}), 404
 
-    # 내 문의가 아니면 막기
+    
     if inquiry['user_id'] != g.user_id:
         return jsonify({"error": "해당 문의에 접근할 권한이 없습니다."}), 403
 
-    # created_at 포맷 변환
+    
     if isinstance(inquiry.get("created_at"), datetime):
         inquiry["created_at"] = inquiry["created_at"].strftime("%Y-%m-%d %H:%M:%S")
 
     return jsonify(inquiry)
-# 문의 상세 페이지 (HTML) → 데코레이터 제거!
+
 @app.route('/inquiry_detail', methods=['GET'])
 def inquiry_detail_page():
     inquiry_id = request.args.get('id', type=int)
     if inquiry_id is None:
-        # id 없으면 목록으로 돌려보내도 되고, 에러 띄워도 됨
+        
         return redirect('/my_inquiry_list')
 
     return render_template('inquiry_detail.html', inquiry_id=inquiry_id)
@@ -329,7 +325,7 @@ def inquiry_detail_page():
 @app.route('/api/inquiries/<int:inquiry_id>/answer', methods=['PUT', 'OPTIONS'])
 @admin_required
 def update_inquiry_answer(inquiry_id):
-    # preflight(OPTIONS) 통과
+    
     if request.method == "OPTIONS":
         return "", 200
 
@@ -644,12 +640,12 @@ def admin_delete_menu(menu_id):
     conn = get_connection()
     try:
         with conn.cursor() as cur:
-            # 메뉴 존재 여부 확인
+            
             cur.execute("SELECT menu_id FROM menu WHERE menu_id = %s", (menu_id,))
             if not cur.fetchone():
                 return jsonify({'message': '해당 메뉴를 찾을 수 없습니다.'}), 404
             
-            # 메뉴 삭제
+           
             cur.execute("DELETE FROM menu WHERE menu_id = %s", (menu_id,))
         conn.commit()
     finally:
@@ -662,12 +658,12 @@ def admin_delete_review(review_id):
     conn = get_connection()
     try:
         with conn.cursor() as cur:
-            # 리뷰 존재 여부 확인
+           
             cur.execute("SELECT review_id FROM review WHERE review_id = %s", (review_id,))
             if not cur.fetchone():
                 return jsonify({'message': '해당 리뷰를 찾을 수 없습니다.'}), 404
             
-            # 리뷰 삭제
+           
             cur.execute("DELETE FROM review WHERE review_id = %s", (review_id,))
         conn.commit()
     finally:

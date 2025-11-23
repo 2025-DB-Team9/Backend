@@ -5,19 +5,19 @@
     <title>매장 상세 정보</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- static/Home.css -->
+   
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='Home.css') }}"
     />
 
-    <!-- static/css/form-style.css -->
+   
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/form-style.css') }}"
     />
 
-    <!-- static/store_detail.css -->
+   
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='store_detail.css') }}"
@@ -121,7 +121,7 @@
           <div class="form-header">
             <h3>메뉴</h3>
             <div id="menu-list" class="menu-list">
-              <!-- 메뉴 목록이 여기에 동적으로 추가됨 -->
+              
             </div>
           </div>
         </div>
@@ -131,7 +131,7 @@
           <div class="form-header">
             <h3>최근 리뷰</h3>
             <div id="reviews-list" class="reviews-list">
-              <!-- 리뷰 목록이 여기에 동적으로 추가됨 -->
+            
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@
           const menuCard = document.getElementById("menu-card");
           const reviewsCard = document.getElementById("reviews-card");
 
-          // 로딩 상태 표시
+         
           if (loadingEl) loadingEl.style.display = "block";
           if (errorEl) errorEl.style.display = "none";
 
@@ -208,7 +208,7 @@
               menuListEl.innerHTML = data.menus
                 .map(
                   (menu) => {
-                    // 특수문자 이스케이프 처리
+                   
                     const escapedName = (menu.name || "").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
                     return `
                 <div class="menu-item" data-menu-id="${menu.menu_id}" data-menu-name="${escapedName}" data-menu-price="${menu.price || 0}">
@@ -298,7 +298,7 @@
                 )
                 .join("");
 
-              // 관리자일 경우 리뷰 삭제 버튼 이벤트 리스너 추가
+              
               if (isAdmin) {
                 reviewsListEl.querySelectorAll('.delete-review-btn').forEach(btn => {
                   btn.addEventListener('click', function() {
@@ -312,14 +312,14 @@
                 '<div class="no-data">등록된 리뷰가 없습니다.</div>';
             }
 
-            // 카드들 표시
+            
             if (storeInfoCard) storeInfoCard.style.display = "block";
             if (statsCard) statsCard.style.display = "block";
             if (hoursCard) hoursCard.style.display = "block";
             if (menuCard) menuCard.style.display = "block";
             if (reviewsCard) reviewsCard.style.display = "block";
 
-            // ✅ 관리자라면 상단/메뉴 관리 버튼 보이기
+            // 관리자라면 상단/메뉴 관리 버튼 보이기
             if (isAdmin) {
               const adminStoreActions = document.getElementById("admin-store-actions");
               const adminMenuActions = document.getElementById("admin-menu-actions");
@@ -343,11 +343,11 @@
           }
         }
 
-        // 인라인 뒤로가기 버튼
+        
         document
           .getElementById("back-btn-inline")
           .addEventListener("click", () => {
-            // 관리자면 매장 검색 페이지로, 아니면 랭킹으로
+            
             if (isAdmin) {
               window.location.href = "/admin/store/search";
             } else {
@@ -355,7 +355,7 @@
             }
           });
 
-        // 매장 수정 버튼 클릭
+        
         const editStoreBtn = document.getElementById("edit-store-btn");
         if (editStoreBtn) {
           editStoreBtn.addEventListener("click", () => {
@@ -363,7 +363,7 @@
           });
         }
 
-        // 브라우저 뒤로가기 버튼 처리
+        
         window.addEventListener('popstate', function(event) {
           if (isAdmin) {
             window.location.href = "/admin/store/search";
@@ -372,11 +372,11 @@
           }
         });
 
-        // 페이지 로드 시 히스토리에 현재 상태 추가
+        
         history.pushState({ page: 'store_detail' }, '', window.location.href);
 
 
-        // ✅ 메뉴 추가 버튼 클릭
+       
         if (document.getElementById("add-menu-btn")) {
           document
             .getElementById("add-menu-btn")
@@ -402,7 +402,7 @@
             });
         }
 
-        // ✅ 전역 함수: 메뉴 수정 (menu_id, 기존 이름, 기존 가격)
+        
       async function editMenu(menuId, currentName = "", currentPrice = 0) {
         const newName = prompt("새 메뉴 이름을 입력하세요", currentName);
         if (!newName) return;
@@ -432,7 +432,7 @@
           }
 
           alert(data.message || "메뉴 수정 완료");
-          // 🔥 여기서 다시 상세 정보 로딩
+          
           await loadStoreDetail();
 
         } catch (err) {
@@ -441,7 +441,7 @@
         }
       }
 
-      // ✅ 전역 함수: 메뉴 삭제 (menu_id 필요)
+      
       async function deleteMenu(menuId) {
         if (!confirm("정말 이 메뉴를 삭제하시겠습니까?")) {
           return;
@@ -461,7 +461,7 @@
           }
 
           alert(data.message || "메뉴 삭제 완료");
-          // 🔥 여기서 다시 상세 정보 로딩
+         
           await loadStoreDetail();
 
         } catch (err) {
@@ -470,7 +470,7 @@
         }
       }
 
-      // ✅ 전역 함수: 리뷰 삭제 (review_id 필요)
+      
       async function deleteReview(reviewId) {
         if (!confirm("정말 이 리뷰를 삭제하시겠습니까?")) {
           return;
@@ -490,7 +490,7 @@
           }
 
           alert(data.message || "리뷰 삭제 완료");
-          // 🔥 여기서 다시 상세 정보 로딩
+          
           await loadStoreDetail();
 
         } catch (err) {
@@ -502,7 +502,7 @@
         // 로그아웃 기능
         function logout() {
           if (confirm("로그아웃 하시겠습니까?")) {
-            // localStorage에서 모든 인증 정보 제거
+          
             localStorage.removeItem("token");
             localStorage.removeItem("user_id");
             localStorage.removeItem("user_name");
@@ -511,7 +511,7 @@
             localStorage.removeItem("admin_name");
             localStorage.removeItem("adminName");
 
-            // 로그인 페이지로 이동
+            
             window.location.href = "/login";
           }
         }

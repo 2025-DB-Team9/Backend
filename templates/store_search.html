@@ -106,7 +106,7 @@
             );
 
             if (!res.ok) {
-              // HTTP 에러 응답 처리
+             
               const errorData = await res.json().catch(() => ({}));
               msgEl.textContent =
                 errorData.error || `서버 오류 (${res.status})`;
@@ -117,7 +117,7 @@
 
             const data = await res.json();
 
-            // 배열인지 확인 (여러 매장 반환)
+            
             if (Array.isArray(data) && data.length > 0) {
               msgEl.textContent = `검색 결과: ${data.length}개 매장을 찾았습니다.`;
               msgEl.style.color = "#34a853";
@@ -129,7 +129,7 @@
                 storeItem.className = "store-item";
                 storeItem.textContent = store.name;
                 storeItem.onclick = function () {
-                  // 검색 성공: 해당 매장 상세 페이지로 이동
+                  
                   window.location.href = `/ranking/store_info/${store.store_id}`;
                 };
                 resultsEl.appendChild(storeItem);
@@ -155,7 +155,7 @@
       // 로그아웃 기능
       function logout() {
         if (confirm("로그아웃 하시겠습니까?")) {
-          // localStorage에서 모든 인증 정보 제거
+          
           localStorage.removeItem("token");
           localStorage.removeItem("user_id");
           localStorage.removeItem("user_name");
@@ -164,7 +164,7 @@
           localStorage.removeItem("admin_name");
           localStorage.removeItem("adminName");
 
-          // 로그인 페이지로 이동
+          
           window.location.href = "/login";
         }
       }
@@ -179,4 +179,4 @@
     </script>
   </body>
 </html>
-<!-- http://localhost:5000/admin/store/search로 접속하시면 됩니다 -->
+

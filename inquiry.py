@@ -17,17 +17,16 @@ def get_conn():
         charset='utf8mb4',
         cursorclass=pymysql.cursors.DictCursor
     )
-# 로그인 붙으면 여기서 세션에서 user_id, role 꺼내면 됨
 def get_current_user():
-    # 나중에는 세션, DB에서 가져옴
+    
     return {
         "user_id": 1,
-        "role": "user"   # 또는 "admin"
+        "role": "user"   
     }
 
-# 로그인 붙으면 여기서 세션에서 user_id 꺼내면 됨
+
 def get_current_user_id():
-    return get_current_user()["user_id"]  # 테스트용. 나중에 진짜 로그인 연동
+    return get_current_user()["user_id"]  
 
 @app.route("/inquiry", methods=["GET"])
 def inquiry_page():
@@ -38,9 +37,9 @@ def inquiry_page():
 @app.route('/api/inquiries', methods=['POST'])
 def create_inquiry():
       
-    data = request.json  # JSON으로 받는다고 가정
+    data = request.json  
 
-    user_id = data.get('user_id')      # 나중엔 get_current_user_id()로 대체
+    user_id = data.get('user_id')    
     title = data.get('title')
     writer = data.get('writer')
     content = data.get('content')
@@ -200,7 +199,6 @@ def admin_inquiry_list():
     finally:
         conn.close()
 
-    # inquiries: [{ 'inquiry_id': 1, 'title': ..., ... }, ...]
     return render_template("admin_inquiry_list.html", inquiries=inquiries)
 
 #관리자용 문의 상세 + 답변
@@ -212,7 +210,7 @@ def admin_inquiry_detail(inquiry_id):
     try:
         with conn.cursor() as cur:
             if request.method == "POST":
-                # form에서 넘어온 answer 저장
+                
                 answer = request.form.get("answer")
 
                 update_sql = """
@@ -223,10 +221,10 @@ def admin_inquiry_detail(inquiry_id):
                 cur.execute(update_sql, (answer, inquiry_id))
                 conn.commit()
 
-                # 저장 후 다시 상세 페이지로 이동
+                
                 return redirect(url_for("admin_inquiry_detail", inquiry_id=inquiry_id))
 
-            # GET 요청일 때는 문의 내용 조회
+           
             select_sql = """
                 SELECT inquiry_id, user_id, title, writer, field, content, created_at, answer
                 FROM inquiry

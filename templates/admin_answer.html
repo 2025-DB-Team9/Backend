@@ -68,7 +68,7 @@
   const msgEl = document.getElementById("msg");
 
   async function loadInquiry() {
-    // id가 아예 없으면 여기서 막기
+    
     if (!id) {
       msgEl.style.color = "#d93025";
       msgEl.textContent =
@@ -110,7 +110,7 @@
         answerInput.value = data.answer;
       }
 
-      msgEl.textContent = ""; // 에러 문구 초기화
+      msgEl.textContent = ""; 
     } catch (err) {
       console.error("loadInquiry 오류:", err);
       msgEl.style.color = "#d93025";
@@ -148,7 +148,7 @@
       msgEl.style.color = "#188038";
       msgEl.textContent = "답변이 저장되었습니다.";
       alert("답변이 저장되었습니다.");
-      // location.href = 'admin_inquiry_list.html';
+     
     } catch (err) {
       console.error("saveAnswer 오류:", err);
       alert("오류가 발생했습니다.");
@@ -157,7 +157,7 @@
 
   document.getElementById("save-btn").addEventListener("click", saveAnswer);
 
-  // 페이지 들어오면 바로 로딩
+  
   loadInquiry();
   
   // 로그아웃 기능
