@@ -149,6 +149,10 @@
           const menuCard = document.getElementById("menu-card");
           const reviewsCard = document.getElementById("reviews-card");
 
+          // 로딩 상태 표시
+          if (loadingEl) loadingEl.style.display = "block";
+          if (errorEl) errorEl.style.display = "none";
+
           try {
             const res = await fetch(`/api/stores/${STORE_ID}/detail`);
 
@@ -192,8 +196,11 @@
             if (data.menus && data.menus.length > 0) {
               menuListEl.innerHTML = data.menus
                 .map(
-                  (menu) => `
-                <div class="menu-item">
+                  (menu) => {
+                    // 특수문자 이스케이프 처리
+                    const escapedName = (menu.name || "").replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+                    return `
+                <div class="menu-item" data-menu-id="${menu.menu_id}" data-menu-name="${escapedName}" data-menu-price="${menu.price || 0}">
                   <div>
                     <span class="menu-name">${menu.name}</span>
                     <span class="menu-price">${
@@ -206,10 +213,10 @@
                     isAdmin
                       ? `
                     <div class="menu-admin-actions">
-                      <button class="publish-btn" onclick="editMenu(${menu.menu_id})">
+                      <button class="publish-btn edit-menu-btn" data-menu-id="${menu.menu_id}">
                         수정
                       </button>
-                      <button class="publish-btn" onclick="deleteMenu(${menu.menu_id})">
+                      <button class="publish-btn delete-menu-btn" data-menu-id="${menu.menu_id}">
                         삭제
                       </button>
                     </div>
@@ -217,9 +224,30 @@
                       : ""
                   }
                 </div>
-              `
+              `;
+                  }
                 )
                 .join("");
+
+              // 관리자일 경우 이벤트 리스너 추가
+              if (isAdmin) {
+                menuListEl.querySelectorAll('.edit-menu-btn').forEach(btn => {
+                  btn.addEventListener('click', function() {
+                    const menuItem = this.closest('.menu-item');
+                    const menuId = parseInt(menuItem.dataset.menuId);
+                    const menuName = menuItem.dataset.menuName.replace(/&#39;/g, "'").replace(/&quot;/g, '"');
+                    const menuPrice = parseInt(menuItem.dataset.menuPrice) || 0;
+                    editMenu(menuId, menuName, menuPrice);
+                  });
+                });
+
+                menuListEl.querySelectorAll('.delete-menu-btn').forEach(btn => {
+                  btn.addEventListener('click', function() {
+                    const menuId = parseInt(this.dataset.menuId);
+                    deleteMenu(menuId);
+                  });
+                });
+              }
             } else {
               menuListEl.innerHTML =
                 '<div class="no-data">등록된 메뉴가 없습니다.</div>';
@@ -252,16 +280,22 @@
             }
 
             // 카드들 표시
-            storeInfoCard.style.display = "block";
-            statsCard.style.display = "block";
-            hoursCard.style.display = "block";
-            menuCard.style.display = "block";
-            reviewsCard.style.display = "block";
+            if (storeInfoCard) storeInfoCard.style.display = "block";
+            if (statsCard) statsCard.style.display = "block";
+            if (hoursCard) hoursCard.style.display = "block";
+            if (menuCard) menuCard.style.display = "block";
+            if (reviewsCard) reviewsCard.style.display = "block";
 
             // ✅ 관리자라면 상단/메뉴 관리 버튼 보이기
             if (isAdmin) {
-              document.getElementById("admin-store-actions").style.display = "block";
-              document.getElementById("admin-menu-actions").style.display = "block";
+              const adminStoreActions = document.getElementById("admin-store-actions");
+              const adminMenuActions = document.getElementById("admin-menu-actions");
+              if (adminStoreActions) {
+                adminStoreActions.style.display = "block";
+              }
+              if (adminMenuActions) {
+                adminMenuActions.style.display = "block";
+              }
             }
           } catch (err) {
             console.error("매장 정보 불러오기 실패:", err);
@@ -345,12 +379,12 @@
             });
         }
 
-        // ✅ 전역 함수: 메뉴 수정/삭제 (menu_id 필요)
-      async function editMenu(menuId) {
-        const newName = prompt("새 메뉴 이름을 입력하세요");
+        // ✅ 전역 함수: 메뉴 수정 (menu_id, 기존 이름, 기존 가격)
+      async function editMenu(menuId, currentName = "", currentPrice = 0) {
+        const newName = prompt("새 메뉴 이름을 입력하세요", currentName);
         if (!newName) return;
 
-        const newPriceStr = prompt("새 가격을 숫자로 입력하세요");
+        const newPriceStr = prompt("새 가격을 숫자로 입력하세요", currentPrice);
         const newPrice = Number(newPriceStr);
         if (!newPriceStr || Number.isNaN(newPrice)) {
           alert("가격을 올바르게 입력하세요.");
@@ -375,6 +409,35 @@
           }
 
           alert(data.message || "메뉴 수정 완료");
+          // 🔥 여기서 다시 상세 정보 로딩
+          await loadStoreDetail();
+
+        } catch (err) {
+          console.error(err);
+          alert("서버 오류가 발생했습니다.");
+        }
+      }
+
+      // ✅ 전역 함수: 메뉴 삭제 (menu_id 필요)
+      async function deleteMenu(menuId) {
+        if (!confirm("정말 이 메뉴를 삭제하시겠습니까?")) {
+          return;
+        }
+
+        try {
+          const res = await fetch(`/api/admin/menu/${menuId}`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" }
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (!res.ok) {
+            alert(data.message || "메뉴 삭제에 실패했습니다.");
+            return;
+          }
+
+          alert(data.message || "메뉴 삭제 완료");
           // 🔥 여기서 다시 상세 정보 로딩
           await loadStoreDetail();
 

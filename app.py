@@ -493,6 +493,11 @@ def search_store():
     return jsonify(store)
 
 
+@app.route('/admin/store/search', methods=['GET'])
+def admin_store_search_page():
+    """매장 검색 페이지를 보여줍니다."""
+    return render_template('store_search.html')
+
 @app.route('/admin/store/<int:store_id>', methods=['GET'])
 def admin_store_edit(store_id):
     return render_template('store_admin_edit.html', store_id=store_id)
@@ -630,6 +635,24 @@ def admin_update_menu(menu_id):
         conn.close()
 
     return jsonify({'message': '메뉴가 수정되었습니다.'}), 200
+
+@app.route('/api/admin/menu/<int:menu_id>', methods=['DELETE'])
+def admin_delete_menu(menu_id):
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            # 메뉴 존재 여부 확인
+            cur.execute("SELECT menu_id FROM menu WHERE menu_id = %s", (menu_id,))
+            if not cur.fetchone():
+                return jsonify({'message': '해당 메뉴를 찾을 수 없습니다.'}), 404
+            
+            # 메뉴 삭제
+            cur.execute("DELETE FROM menu WHERE menu_id = %s", (menu_id,))
+        conn.commit()
+    finally:
+        conn.close()
+
+    return jsonify({'message': '메뉴가 삭제되었습니다.'}), 200
 
 # ======================
 # 실행

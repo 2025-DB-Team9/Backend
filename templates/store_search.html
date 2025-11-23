@@ -4,8 +4,9 @@
     <meta charset="UTF-8" />
     <title>매장 검색</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="/static/Home.css" />
-    <link rel="stylesheet" href="/static/store_search.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='Home.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form-style.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='store_search.css') }}" />
   </head>
   <body>
     <header class="top-nav">
@@ -22,10 +23,17 @@
         </div>
       </div>
     </header>
-    <main class="search-main">
-      <div class="search-container">
-        <div class="search-title">수정할 매장 검색</div>
-        <form id="search-form" class="search-form">
+    <main class="main-content">
+      <!-- 탭 메뉴 -->
+      <div class="tab-menu">
+        <button class="tab-btn active">매장 검색</button>
+        <button class="tab-btn" id="inquiry-tab">문의</button>
+      </div>
+
+      <div class="form-container">
+        <div class="form-card" style="text-align: center;">
+          <div class="search-title" style="margin-bottom: 30px;">수정할 매장 검색</div>
+          <form id="search-form" class="search-form" style="max-width: 600px; margin: 0 auto;">
           <div class="search-wrapper">
             <div class="search-box">
               <svg
@@ -49,8 +57,9 @@
             </div>
             <button type="submit" class="search-btn">검색</button>
           </div>
-        </form>
-        <div id="search-message" class="search-message"></div>
+          </form>
+          <div id="search-message" class="search-message" style="margin-top: 16px;"></div>
+        </div>
       </div>
     </main>
     <script>
@@ -87,8 +96,8 @@
             const data = await res.json();
 
             if (data.store_id) {
-              // 검색 성공: 해당 매장 수정 페이지로 이동
-              window.location.href = `/admin/store/${data.store_id}`;
+              // 검색 성공: 해당 매장 상세 페이지로 이동
+              window.location.href = `/ranking/store_info/${data.store_id}`;
             } else {
               msgEl.textContent = data.error || "매장을 찾을 수 없습니다.";
               msgEl.style.color = "#d93025";
@@ -99,6 +108,31 @@
             msgEl.style.color = "#d93025";
           }
         });
+
+      // 로그아웃 기능
+      function logout() {
+        if (confirm("로그아웃 하시겠습니까?")) {
+          // localStorage에서 모든 인증 정보 제거
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("user_name");
+          localStorage.removeItem("isAdmin");
+          localStorage.removeItem("adminId");
+          localStorage.removeItem("admin_name");
+          localStorage.removeItem("adminName");
+          
+          // 로그인 페이지로 이동
+          window.location.href = "/login";
+        }
+      }
+
+      // 프로필 아이콘 클릭 시 로그아웃
+      document.querySelector(".profile-icon").addEventListener("click", logout);
+
+      // 탭 메뉴 네비게이션
+      document.getElementById("inquiry-tab").addEventListener("click", () => {
+        window.location.href = "/admin_inquiry_list";
+      });
     </script>
   </body>
 </html>
