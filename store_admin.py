@@ -26,8 +26,8 @@ def get_connection():
     )
 
 # =========================================================
-# [관리자] 매장 정보 조회 (수정 페이지 진입용)
-#  GET /api/stores/<store_id>
+# [관리자] 매장 정보 조회 
+# 
 # =========================================================
 @bp.route("/api/stores/<int:store_id>", methods=["GET"])
 def get_store(store_id):
@@ -54,7 +54,7 @@ def get_store(store_id):
             row = cur.fetchone()
             
             if row:
-                # open_time, close_time이 timedelta인 경우 문자열로 변환
+               
                 if isinstance(row.get("open"), timedelta):
                     total_seconds = row["open"].seconds
                     hours = total_seconds // 3600
@@ -67,7 +67,7 @@ def get_store(store_id):
                     minutes = (total_seconds % 3600) // 60
                     row["close"] = f"{hours:02d}:{minutes:02d}"
                 
-                # distance가 Decimal 타입인 경우 float로 변환
+                
                 if row.get("distance") is not None and isinstance(row.get("distance"), decimal.Decimal):
                     row["distance"] = float(row["distance"])
                     
@@ -84,7 +84,7 @@ def get_store(store_id):
 
 # =========================================================
 # [관리자] 매장 정보 수정
-#  PUT /api/stores/<store_id>
+#  
 # =========================================================
 @bp.route("/api/stores/<int:store_id>", methods=["PUT"])
 def update_store(store_id):
@@ -102,7 +102,7 @@ def update_store(store_id):
     phone = data.get("phone")
     distance = data.get("distance")
 
-    # 필수 값 체크
+    
     if not name or not address:
         return (
             jsonify({"error": "필수 항목(name, address)이 누락되었습니다."}),
@@ -111,12 +111,12 @@ def update_store(store_id):
     conn = get_connection()
     try:
         with conn.cursor() as cur:
-            # 매장 존재 여부 확인
+           
             cur.execute("SELECT store_id FROM store WHERE store_id = %s", (store_id,))
             if not cur.fetchone():
                 return jsonify({"error": "해당 매장을 찾을 수 없습니다."}), 404
 
-            # 업데이트할 필드 구성
+           
             update_fields = ["name = %s", "address = %s"]
             params = [name, address]
 
@@ -145,7 +145,7 @@ def update_store(store_id):
             cur.execute(sql, params)
             conn.commit()
 
-            # 수정된 내용 다시 조회해서 응답
+           
             cur.execute(
                 """
                 SELECT
@@ -164,7 +164,7 @@ def update_store(store_id):
             updated = cur.fetchone()
             
             if updated:
-                # open_time, close_time이 timedelta인 경우 문자열로 변환
+               
                 if isinstance(updated.get("open"), timedelta):
                     total_seconds = updated["open"].seconds
                     hours = total_seconds // 3600
@@ -177,7 +177,7 @@ def update_store(store_id):
                     minutes = (total_seconds % 3600) // 60
                     updated["close"] = f"{hours:02d}:{minutes:02d}"
                 
-                # distance가 Decimal 타입인 경우 float로 변환
+               
                 if updated.get("distance") is not None and isinstance(updated.get("distance"), decimal.Decimal):
                     updated["distance"] = float(updated["distance"])
                     
@@ -192,7 +192,7 @@ def update_store(store_id):
 
 # =========================================================
 # [관리자] 매장 삭제
-#  DELETE /api/stores/<store_id>
+#  
 # =========================================================
 @bp.route("/api/stores/<int:store_id>", methods=["DELETE"])
 def delete_store(store_id):
@@ -203,12 +203,12 @@ def delete_store(store_id):
     conn = get_connection()
     try:
         with conn.cursor() as cur:
-            # 매장 존재 여부 확인
+           
             cur.execute("SELECT store_id FROM store WHERE store_id = %s", (store_id,))
             if not cur.fetchone():
                 return jsonify({"error": "해당 매장을 찾을 수 없습니다."}), 404
 
-            # 매장 삭제
+            
             cur.execute("DELETE FROM store WHERE store_id = %s", (store_id,))
             conn.commit()
     finally:

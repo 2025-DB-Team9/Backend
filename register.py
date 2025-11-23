@@ -34,13 +34,13 @@ def signup():
             store_name = request.form['store_name']
             business_number = request.form['business_number']
 
-            # provider insert
+            
             cursor.execute("""
                 INSERT INTO provider (store_name, pw, business_number, status, login_id)
                 VALUES (%s, %s, %s, 'active', %s)
             """, (store_name, pw, business_number, login_id))
 
-            # user insert (pro_id = provider 마지막 입력된 pro_id)
+           
             cursor.execute("""
                 INSERT INTO user (login_id, pw, name, pro_id)
                 VALUES (%s, %s, %s, LAST_INSERT_ID())
@@ -53,13 +53,13 @@ def signup():
             school = request.form['school']
             student_id = request.form['student_id']
 
-            # student insert
+           
             cursor.execute("""
                 INSERT INTO student (student_id, major)
                 VALUES (%s, %s)
             """, (student_id, school))
 
-            # user insert (student_id 연결)
+            
             cursor.execute("""
                 INSERT INTO user (login_id, pw, name, student_id)
                 VALUES (%s, %s, %s, %s)

@@ -1,8 +1,7 @@
 import sys, io
 import pymysql
-from db import get_connection   # ✅ db.py에서 연결 함수 가져오기
+from db import get_connection  
 
-# (옵션) 콘솔 한글 깨짐 방지 – 터미널 테스트용
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 else:
@@ -28,7 +27,7 @@ def get_rank(limit=20, offset=0, min_reviews=0, use_adv=True):
         LIMIT 20 OFFSET %s
     """
 
-    # 🔴 여기 중요: %s가 2개니까 파라미터도 2개만!
+    
     params = (min_reviews, offset)
 
     conn = get_connection()

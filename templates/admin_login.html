@@ -62,7 +62,7 @@ document.getElementById("admin-login-form").addEventListener("submit", async fun
     const loginId = document.getElementById("admin_login_id").value;
     const password = document.getElementById("admin_password").value;
 
-    const res = await fetch("/api/admin/login", {   // <- 상대 경로로 써도 됨
+    const res = await fetch("/api/admin/login", {  
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ login_id: loginId, password })
@@ -75,11 +75,11 @@ document.getElementById("admin-login-form").addEventListener("submit", async fun
         return;
     }
 
-    // ✅ 관리자 정보 + isAdmin 플래그 저장
+   
     localStorage.setItem("isAdmin", "true");
     localStorage.setItem("adminName", data.admin.admin_name);
     localStorage.setItem("adminId", data.admin.admin_id);
-    // 관리자 문의 목록으로 이동 (그대로 사용)
+    
     window.location.href = "/admin_inquiry_list";
 });
 </script>

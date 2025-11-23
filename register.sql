@@ -21,11 +21,11 @@ MODIFY pro_id INT NOT NULL AUTO_INCREMENT,
 ADD login_id VARCHAR(30) NOT NULL,
 ADD UNIQUE (login_id);
 
- -- 자동으로 회원가입 날자 기입 --
+ 
 ALTER TABLE user 
 MODIFY create_at DATETIME DEFAULT NOW();
 
--- 회원가입시 마다 id 가 1 씩 자동으로 올라감 --
+
 ALTER TABLE user 
 MODIFY user_id INT NOT NULL AUTO_INCREMENT;
 

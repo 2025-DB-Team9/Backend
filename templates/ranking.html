@@ -22,7 +22,7 @@
     </div>
 
     <div class="nav-center">
-      <!-- 필요하면 나중에 버튼/아이콘 추가 -->
+   
     </div>
 
     <div class="nav-right">
@@ -34,7 +34,7 @@
 
   <!-- 메인 콘텐츠 영역 -->
   <div class="main-content">
-    <!-- 탭 메뉴 (랭킹 / 문의 / 기타…) 필요하면 확장 -->
+    
     <div class="tab-menu">
       <button class="tab-btn active">랭킹</button>
       <button class="tab-btn" id="inquiry-tab">문의</button>
@@ -62,12 +62,12 @@
         </div>
       </div>
 
-      <!-- 랭킹 카드들이 들어갈 영역 -->
+   
       <div id="rank-list">
-        <!-- JS에서 question-card들을 생성해서 넣어줄 예정 -->
+       
       </div>
 
-      <!-- 로딩 메시지 / 에러 메시지 -->
+     
       <div id="rank-loading" style="margin-top: 12px; color: #5f6368;">
         랭킹을 불러오는 중입니다...
       </div>
@@ -86,7 +86,7 @@ const API_URL = "/api/rank?limit=20&use_adv=1";
   const refreshBtn = document.getElementById("refresh-btn");
 
   async function loadRanking() {
-    // 로딩 메시지 보이기
+   
     loadingEl.style.display = "block";
     errorEl.style.display = "none";
     rankListEl.innerHTML = "";
@@ -95,17 +95,17 @@ const API_URL = "/api/rank?limit=20&use_adv=1";
       const res = await fetch(API_URL);
       const data = await res.json();
 
-      // 로딩 메시지 숨기기
+      
       loadingEl.style.display = "none";
 
-      // 데이터 없을 때
+      
       if (!Array.isArray(data) || data.length === 0) {
         rankListEl.innerHTML =
           '<div style="margin-top: 8px; color:#5f6368;">표시할 랭킹 데이터가 없습니다.</div>';
         return;
       }
 
-      // ✅ 여기 forEach 한 번만!
+     
       data.forEach((store, index) => {
         const card = document.createElement("div");
         card.className = "question-card";
@@ -151,7 +151,7 @@ const API_URL = "/api/rank?limit=20&use_adv=1";
     }
   }
 
-  // 페이지 처음 로드 시
+ 
   loadRanking();
 
   // 상단 "랭킹 새로고침" 버튼
@@ -164,10 +164,10 @@ const API_URL = "/api/rank?limit=20&use_adv=1";
     window.location.href = "inquiry";
   });
 
-  // 로그아웃 기능
+  
   function logout() {
     if (confirm("로그아웃 하시겠습니까?")) {
-      // localStorage에서 모든 인증 정보 제거
+      
       localStorage.removeItem("token");
       localStorage.removeItem("user_id");
       localStorage.removeItem("user_name");

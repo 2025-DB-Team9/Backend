@@ -137,21 +137,21 @@ CREATE TABLE `review` (
   `user_id`      INT NOT NULL COMMENT '사용자의 id',
   `store_id`     INT NOT NULL COMMENT '매장의 id',
   `content`      TEXT,
-  `rating`       TINYINT,                     -- 1~5 권장
+  `rating`       TINYINT,                     
   `helpful_cnt`  INT NOT NULL DEFAULT 0,
   `created_at`   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`review_id`),
   KEY `idx_review_user` (`user_id`),
   KEY `idx_review_store_created` (`store_id`, `created_at`),
   CONSTRAINT `fk_review_user`
-    FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`)   --팀원 user 테이블 쓰기로 한 것”이랑 연결되는 부분
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`)  
     ON UPDATE RESTRICT ON DELETE CASCADE,
   CONSTRAINT `fk_review_store`
     FOREIGN KEY (`store_id`) REFERENCES `store`(`store_id`)
     ON UPDATE RESTRICT ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 샘플 리뷰(선택)
+--  리뷰
  USE fooddb;
 
 INSERT INTO review (user_id, store_id, content, rating, created_at) VALUES
@@ -225,8 +225,7 @@ GROUP BY s.store_id, s.name, s.address, s.distance_km;
 
 
 -- 2) 베이지안 평균(전체 평균으로 스무딩: m=리뷰수 임계값) 계산용 뷰
---   score = (v/(v+m))*R + (m/(v+m))*C
---   v=store 리뷰수, R=store 평균, C=전체 평균, m=임계 리뷰수(예: 5)
+
 DROP VIEW IF EXISTS v_store_scores_bayesian;
 CREATE VIEW v_store_scores_bayesian AS
 WITH global_stats AS (
@@ -254,14 +253,14 @@ SELECT
   st.distance_km,
   st.R         AS avg_rating,
   st.v         AS review_cnt,
-  -- m: 임계 리뷰수(튜닝 지점). 데이터가 적으면 3~10 사이 추천
+ 
   CAST(5 AS DECIMAL(10,2))    AS m,
   gs.C,
   ((st.v/(st.v + 5.0))*st.R + (5.0/(st.v + 5.0))*gs.C) AS bayes_score
 FROM store_stats st
 CROSS JOIN global_stats gs;
 
--- 3) 최종 랭킹(베이지안 점수 우선 → 리뷰수/평균 보조 정렬)
+
 DROP VIEW IF EXISTS v_store_ranking;
 CREATE VIEW v_store_ranking AS
 SELECT

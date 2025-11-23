@@ -58,7 +58,7 @@ CREATE TABLE `store` (
     ON UPDATE RESTRICT ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 샘플 매장(선택)
+-- 매장
 INSERT INTO store (name, address, open_time, close_time, phone, distance_km, category_id)
 VALUES ('금성이네', '경기 시흥시 정왕동 ', '16:00','01:00','010-9092-4992', 0.5, 1),
 		( '쭈꾸미삼겹살', '경기 시흥시 정왕동 ', '11:00','01:00','050-4110-8859', 0.6, 1   ),
@@ -91,7 +91,7 @@ CREATE TABLE `menu` (
     ON UPDATE RESTRICT ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 샘플 메뉴(선택)
+--  메뉴
 INSERT INTO menu (store_id, name, price) VALUES
 -- 1. 금성이네 (한식)
 (1, '김치찌개', 8000),
@@ -166,7 +166,7 @@ CREATE TABLE `review` (
     ON UPDATE RESTRICT ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 샘플 리뷰(선택)
+--  리뷰
 INSERT INTO `review` (user_id, store_id, content, rating, helpful_cnt)
 VALUES
 (1, 1, '국물 진하고 밥이랑 잘 맞음', 5, 2),
@@ -194,8 +194,7 @@ GROUP BY s.store_id, s.name, s.address, s.distance_km;
 
 
 -- 2) 베이지안 평균(전체 평균으로 스무딩: m=리뷰수 임계값) 계산용 뷰
---   score = (v/(v+m))*R + (m/(v+m))*C
---   v=store 리뷰수, R=store 평균, C=전체 평균, m=임계 리뷰수(예: 5)
+
 DROP VIEW IF EXISTS v_store_scores_bayesian;
 CREATE VIEW v_store_scores_bayesian AS
 WITH global_stats AS (
@@ -223,14 +222,14 @@ SELECT
   st.distance_km,
   st.R         AS avg_rating,
   st.v         AS review_cnt,
-  -- m: 임계 리뷰수(튜닝 지점). 데이터가 적으면 3~10 사이 추천
+  
   CAST(5 AS DECIMAL(10,2))    AS m,
   gs.C,
   ((st.v/(st.v + 5.0))*st.R + (5.0/(st.v + 5.0))*gs.C) AS bayes_score
 FROM store_stats st
 CROSS JOIN global_stats gs;
 
--- 3) 최종 랭킹(베이지안 점수 우선 → 리뷰수/평균 보조 정렬)
+-- 3) 최종 랭킹
 DROP VIEW IF EXISTS v_store_ranking;
 CREATE VIEW v_store_ranking AS
 SELECT
