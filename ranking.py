@@ -9,11 +9,9 @@ else:
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 
 
-def get_rank(limit=10, offset=0, min_reviews=0, use_adv=True):
-    """
-    - use_adv=True  : v_store_ranking.bayes_score 사용
-    - use_adv=False : v_store_ranking.avg_rating 사용(간단 점수)
-    """
+from db import get_connection
+
+def get_rank(limit=20, offset=0, min_reviews=0, use_adv=True):
     score_expr = "bayes_score" if use_adv else "avg_rating"
 
     sql = f"""
@@ -27,20 +25,20 @@ def get_rank(limit=10, offset=0, min_reviews=0, use_adv=True):
         FROM v_store_ranking
         WHERE review_cnt >= %s
         ORDER BY score DESC, review_cnt DESC
-        LIMIT %s OFFSET %s
+        LIMIT 20 OFFSET %s
     """
 
-    params = [min_reviews, limit, offset]
+    # 🔴 여기 중요: %s가 2개니까 파라미터도 2개만!
+    params = (min_reviews, offset)
 
-    conn = get_connection()   # ✅ 여기서 DB 연결 생성
+    conn = get_connection()
     try:
-        with conn.cursor() as cur:
-            cur.execute(sql, params)
-            rows = cur.fetchall()
+        with conn.cursor() as cursor:
+            cursor.execute(sql, params)
+            rows = cursor.fetchall()
+        return rows
     finally:
-        conn.close()          # ✅ 사용 후 연결 닫기
-
-    return rows
+        conn.close()
 
 
 # 터미널에서 단독 실행 테스트용

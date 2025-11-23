@@ -77,115 +77,88 @@
     </div>
   </div>
 
-  <script>
-    const API_URL = "http://localhost:5000/api/rank?limit=20&use_adv=1";
+<script>
+const API_URL = "/api/rank?limit=20&use_adv=1";
 
-    const rankListEl = document.getElementById("rank-list");
-    const loadingEl = document.getElementById("rank-loading");
-    const errorEl = document.getElementById("rank-error");
-    const refreshBtn = document.getElementById("refresh-btn");
+  const rankListEl = document.getElementById("rank-list");
+  const loadingEl = document.getElementById("rank-loading");
+  const errorEl = document.getElementById("rank-error");
+  const refreshBtn = document.getElementById("refresh-btn");
 
-    async function loadRanking() {
-      loadingEl.style.display = "block";
-      errorEl.style.display = "none";
-      rankListEl.innerHTML = "";
+  async function loadRanking() {
+    // 로딩 메시지 보이기
+    loadingEl.style.display = "block";
+    errorEl.style.display = "none";
+    rankListEl.innerHTML = "";
 
-      try {
-        const res = await fetch(API_URL);
-        const data = await res.json();
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
 
-        loadingEl.style.display = "none";
+      // 로딩 메시지 숨기기
+      loadingEl.style.display = "none";
 
-        if (!Array.isArray(data) || data.length === 0) {
-          rankListEl.innerHTML =
-            '<div style="margin-top: 8px; color:#5f6368;">표시할 랭킹 데이터가 없습니다.</div>';
-          return;
-        }
+      // 데이터 없을 때
+      if (!Array.isArray(data) || data.length === 0) {
+        rankListEl.innerHTML =
+          '<div style="margin-top: 8px; color:#5f6368;">표시할 랭킹 데이터가 없습니다.</div>';
+        return;
+      }
 
-        data.forEach((store, index) => {
-          const card = document.createElement("div");
-          card.className = "question-card";
+      // ✅ 여기 forEach 한 번만!
+      data.forEach((store, index) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
 
-          card.innerHTML = `
-            <div class="question-content">
-              <div class="question-header">
-                <div class="question-title-input" style="border-bottom:none;">
-                  ${index + 1}위 · ${store.name || "이름 없음"}
-                </div>
-              </div>
-
-              <div class="question-options">
-                <div class="option-item">
-                  <span>평균 평점: <strong>${Number(store.avg_rating).toFixed(2)}</strong></span>
-                </div>
-                <div class="option-item">
-                  <span>리뷰 수: <strong>${store.review_cnt}</strong>개</span>
-                </div>
-                <div class="option-item">
-                  <span>랭킹 점수: <strong>${Number(store.score).toFixed(3)}</strong></span>
-                </div>
-                <div class="option-item">
-                  <span>거리: <strong>${store.distance_km}</strong> km</span>
-                </div>
+        card.innerHTML = `
+          <div class="question-content">
+            <div class="question-header">
+              <div class="question-title-input" style="border-bottom:none;">
+                ${index + 1}위 · ${store.name || "이름 없음"}
               </div>
             </div>
-          `;
-data.forEach((store, index) => {
-  const card = document.createElement("div");
-  card.className = "question-card";
 
-  card.innerHTML = `
-    <div class="question-content">
-      <div class="question-header">
-        <div class="question-title-input" style="border-bottom:none;">
-          ${index + 1}위 · ${store.name || "이름 없음"}
-        </div>
-      </div>
+            <div class="question-options">
+              <div class="option-item">
+                <span>평균 평점: <strong>${Number(store.avg_rating).toFixed(2)}</strong></span>
+              </div>
+              <div class="option-item">
+                <span>리뷰 수: <strong>${store.review_cnt}</strong>개</span>
+              </div>
+              <div class="option-item">
+                <span>랭킹 점수: <strong>${Number(store.score).toFixed(3)}</strong></span>
+              </div>
+              <div class="option-item">
+                <span>거리: <strong>${store.distance_km}</strong> km</span>
+              </div>
 
-      <div class="question-options">
-        <div class="option-item">
-          <span>평균 평점: <strong>${Number(store.avg_rating).toFixed(2)}</strong></span>
-        </div>
-        <div class="option-item">
-          <span>리뷰 수: <strong>${store.review_cnt}</strong>개</span>
-        </div>
-        <div class="option-item">
-          <span>랭킹 점수: <strong>${Number(store.score).toFixed(3)}</strong></span>
-        </div>
-        <div class="option-item">
-          <span>거리: <strong>${store.distance_km}</strong> km</span>
-        </div>
+              <!-- 메뉴 / 상세 보기 버튼 -->
+              <div class="option-item">
+                <button class="publish-btn" onclick="location.href='/ranking/store_info/${store.store_id}'">
+                  메뉴 / 상세 보기
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
 
-        <!-- ⭐ 여기 추가: 상세보기 버튼 -->
-        <div class="option-item">
-          <button class="publish-btn" onclick="location.href='/ranking/store_info/${store.store_id}'">
-            메뉴 / 상세 보기
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  rankListEl.appendChild(card);
-});
-
-          rankListEl.appendChild(card);
-        });
-      } catch (err) {
-        console.error("랭킹 불러오기 실패:", err);
-        loadingEl.style.display = "none";
-        errorEl.style.display = "block";
-      }
+        rankListEl.appendChild(card);
+      });
+    } catch (err) {
+      console.error("랭킹 불러오기 실패:", err);
+      loadingEl.style.display = "none";
+      errorEl.style.display = "block";
     }
+  }
 
-    // 페이지 처음 로드 시
+  // 페이지 처음 로드 시
+  loadRanking();
+
+  // 상단 "랭킹 새로고침" 버튼
+  refreshBtn.addEventListener("click", () => {
     loadRanking();
-
-    // 상단 "랭킹 새로고침" 버튼
-    refreshBtn.addEventListener("click", () => {
-      loadRanking();
-    });
-  </script>
+  });
+</script>
   <script>
   document.getElementById("inquiry-tab").addEventListener("click", () => {
     window.location.href = "inquiry";
