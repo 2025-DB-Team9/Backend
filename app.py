@@ -671,6 +671,54 @@ def admin_delete_review(review_id):
 
     return jsonify({'message': '리뷰가 삭제되었습니다.'}), 200
 
+
+# ======================
+# 리뷰 작성
+# POST /api/reviews
+# ======================
+@app.route("/api/reviews", methods=["POST", "OPTIONS"])
+@login_required
+def create_review():
+    if request.method == "OPTIONS":
+        return "", 200
+    
+    data = request.get_json() or {}
+    store_id = data.get("store_id")
+    rating = data.get("rating")
+    content = data.get("content")
+    
+    if not store_id or not rating or not content:
+        return jsonify({"error": "store_id, rating, content는 필수입니다."}), 400
+    
+    if not isinstance(rating, int) or rating < 1 or rating > 5:
+        return jsonify({"error": "평점은 1~5 사이의 숫자여야 합니다."}), 400
+    
+    user_id = g.user_id
+    
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            # 매장 존재 확인
+            cur.execute("SELECT store_id FROM store WHERE store_id = %s", (store_id,))
+            if not cur.fetchone():
+                return jsonify({"error": "해당 매장을 찾을 수 없습니다."}), 404
+            
+            # 리뷰 작성
+            sql = """
+                INSERT INTO review (user_id, store_id, rating, content)
+                VALUES (%s, %s, %s, %s)
+            """
+            cur.execute(sql, (user_id, store_id, rating, content))
+            conn.commit()
+            review_id = cur.lastrowid
+    except Exception as e:
+        print(f"리뷰 작성 오류: {e}")
+        return jsonify({"error": "리뷰 작성 중 오류가 발생했습니다."}), 500
+    finally:
+        conn.close()
+    
+    return jsonify({"message": "리뷰가 작성되었습니다.", "review_id": review_id}), 201
+
 # ======================
 # 실행
 # ======================

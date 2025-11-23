@@ -175,6 +175,73 @@
   align-items: flex-start;
 }
 
+.review-write-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.review-rating-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-rating-input label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #202124;
+}
+
+.review-rating-select {
+  padding: 8px 12px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #202124;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.review-rating-select:hover {
+  border-color: #9aa0a6;
+}
+
+.review-rating-select:focus {
+  border-color: #673ab7;
+}
+
+.review-content-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #202124;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.review-content-input:focus {
+  border-color: #673ab7;
+}
+
+.review-content-input::placeholder {
+  color: #9aa0a6;
+}
+
+.review-write-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
 .loading-message,
 .error-message {
   text-align: center;

@@ -121,10 +121,67 @@
           </div>
         </div>
 
+        <!-- 리뷰 작성 카드 (일반 사용자만 표시) -->
+        <div class="form-card" id="review-write-card" style="display: none">
+          <div class="form-header">
+            <h3>리뷰 작성</h3>
+            <div class="review-write-form">
+              <div class="review-rating-input">
+                <label>평점:</label>
+                <select id="review-rating" class="review-rating-select">
+                  <option value="5">5점</option>
+                  <option value="4">4점</option>
+                  <option value="3">3점</option>
+                  <option value="2">2점</option>
+                  <option value="1">1점</option>
+                </select>
+              </div>
+              <textarea
+                id="review-content-input"
+                class="review-content-input"
+                placeholder="리뷰를 작성해주세요..."
+                rows="4"
+              ></textarea>
+              <div class="review-write-actions">
+                <button class="publish-btn" id="submit-review-btn">
+                  작성하기
+                </button>
+                <button
+                  class="publish-btn"
+                  id="cancel-review-btn"
+                  style="background-color: #5f6368"
+                >
+                  취소
+                </button>
+              </div>
+              <div
+                id="review-write-message"
+                style="margin-top: 8px; color: #d93025"
+              ></div>
+            </div>
+          </div>
+        </div>
+
         <!-- 리뷰 목록 카드 -->
         <div class="form-card" id="reviews-card">
           <div class="form-header">
-            <h3>최근 리뷰</h3>
+            <div
+              style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 16px;
+              "
+            >
+              <h3 style="margin: 0">최근 리뷰</h3>
+              <button
+                class="publish-btn"
+                id="write-review-btn"
+                style="display: none"
+              >
+                리뷰 작성
+              </button>
+            </div>
             <div id="reviews-list" class="reviews-list"></div>
           </div>
         </div>
@@ -143,6 +200,8 @@
     <script>
         const STORE_ID = {{ store_id|default(1) }};
         const isAdmin = localStorage.getItem("isAdmin") === "true";
+        const token = localStorage.getItem("token");
+        const isLoggedIn = !!token;
 
         async function loadStoreDetail() {
           const loadingEl = document.getElementById("loading-message");
@@ -325,6 +384,14 @@
               }
               if (editStoreBtn) {
                 editStoreBtn.style.display = "block";
+              }
+            }
+
+            // 일반 사용자이고 로그인되어 있으면 리뷰 작성 버튼 표시
+            if (!isAdmin && isLoggedIn) {
+              const writeReviewBtn = document.getElementById("write-review-btn");
+              if (writeReviewBtn) {
+                writeReviewBtn.style.display = "block";
               }
             }
           } catch (err) {
@@ -511,6 +578,99 @@
 
         // 로그아웃 버튼 클릭 시 로그아웃
         document.getElementById("logout-btn").addEventListener("click", logout);
+
+        // 리뷰 작성 버튼 클릭
+        const writeReviewBtn = document.getElementById("write-review-btn");
+        if (writeReviewBtn) {
+          writeReviewBtn.addEventListener("click", () => {
+            const reviewWriteCard = document.getElementById("review-write-card");
+            if (reviewWriteCard) {
+              reviewWriteCard.style.display = "block";
+              writeReviewBtn.style.display = "none";
+              reviewWriteCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            }
+          });
+        }
+
+        // 리뷰 작성 취소 버튼
+        const cancelReviewBtn = document.getElementById("cancel-review-btn");
+        if (cancelReviewBtn) {
+          cancelReviewBtn.addEventListener("click", () => {
+            const reviewWriteCard = document.getElementById("review-write-card");
+            const writeReviewBtn = document.getElementById("write-review-btn");
+            if (reviewWriteCard) {
+              reviewWriteCard.style.display = "none";
+              document.getElementById("review-content-input").value = "";
+              document.getElementById("review-rating").value = "5";
+              document.getElementById("review-write-message").textContent = "";
+            }
+            if (writeReviewBtn && !isAdmin && isLoggedIn) {
+              writeReviewBtn.style.display = "block";
+            }
+          });
+        }
+
+        // 리뷰 작성 제출
+        const submitReviewBtn = document.getElementById("submit-review-btn");
+        if (submitReviewBtn) {
+          submitReviewBtn.addEventListener("click", async () => {
+            const rating = parseInt(document.getElementById("review-rating").value);
+            const content = document.getElementById("review-content-input").value.trim();
+            const messageEl = document.getElementById("review-write-message");
+
+            if (!content) {
+              messageEl.textContent = "리뷰 내용을 입력해주세요.";
+              return;
+            }
+
+            if (!token) {
+              messageEl.textContent = "로그인이 필요합니다.";
+              return;
+            }
+
+            try {
+              const res = await fetch("/api/reviews", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  store_id: STORE_ID,
+                  rating: rating,
+                  content: content
+                })
+              });
+
+              const data = await res.json();
+
+              if (!res.ok) {
+                messageEl.textContent = data.error || data.message || "리뷰 작성에 실패했습니다.";
+                return;
+              }
+
+              alert(data.message || "리뷰가 작성되었습니다.");
+
+              // 폼 초기화 및 숨기기
+              document.getElementById("review-content-input").value = "";
+              document.getElementById("review-rating").value = "5";
+              messageEl.textContent = "";
+              document.getElementById("review-write-card").style.display = "none";
+
+              const writeReviewBtn = document.getElementById("write-review-btn");
+              if (writeReviewBtn && !isAdmin && isLoggedIn) {
+                writeReviewBtn.style.display = "block";
+              }
+
+              // 리뷰 목록 새로고침
+              await loadStoreDetail();
+
+            } catch (err) {
+              console.error("리뷰 작성 오류:", err);
+              messageEl.textContent = "서버 오류가 발생했습니다.";
+            }
+          });
+        }
 
         // 페이지 로드 시 데이터 불러오기
         window.onload = loadStoreDetail;
