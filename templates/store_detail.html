@@ -14,7 +14,6 @@
   <!-- static/store_detail.css -->
   <link rel="stylesheet" href="{{ url_for('static', filename='store_detail.css') }}">
 </head>
-
   <body>
     <header class="top-nav">
       <div class="nav-left">
@@ -128,7 +127,6 @@
         ></div>
       </div>
     </main>
-
 <script>
   const STORE_ID = {{ store_id|default(1) }};
   const isAdmin = localStorage.getItem("isAdmin") === "true";

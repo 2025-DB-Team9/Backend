@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, send_from_directory, g, render_template, redirect
+
 from flask_cors import CORS
 from ranking import get_rank
 import decimal
@@ -58,7 +59,6 @@ def convert_decimal(rows):
         converted.append(new_row)
     return converted
 
-
 # ======================
 # 랭킹 API
 # GET /api/rank
@@ -78,8 +78,6 @@ def api_rank():
 
     rows = convert_decimal(rows)
     return jsonify(rows)
-
-
 # ======================
 # JWT 데코레이터들
 # ======================
@@ -219,7 +217,6 @@ def create_inquiry():
 
     if not title or not content:
         return jsonify({"error": "title, content는 필수입니다."}), 400
-
     conn = get_connection()
     try:
         with conn.cursor() as cur:
@@ -276,7 +273,6 @@ def list_inquiries():
         conn.close()
 
     return jsonify(rows)
-
 
 # ======================
 # 문의 상세 (사용자 본인 것만)
