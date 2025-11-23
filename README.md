@@ -26,6 +26,10 @@
    ```bash
    pip install pymysql
    ```
+   > > PyJWT설치
+   ```bash
+   pip install PyJWT
+   ```
 
 # 📌 2. 실행 하기
 

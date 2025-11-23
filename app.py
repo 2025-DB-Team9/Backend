@@ -480,17 +480,17 @@ def search_store():
                 SELECT store_id, name
                 FROM store
                 WHERE name LIKE %s
-                LIMIT 1
+                ORDER BY name
             """
             cur.execute(sql, (f"%{q}%",))
-            store = cur.fetchone()
+            stores = cur.fetchall()
     finally:
         conn.close()
 
-    if not store:
+    if not stores:
         return jsonify({'error': '매장을 찾을 수 없습니다.'}), 404
 
-    return jsonify(store)
+    return jsonify(stores)
 
 
 @app.route('/admin/store/search', methods=['GET'])
