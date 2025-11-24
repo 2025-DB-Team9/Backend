@@ -43,6 +43,7 @@
    ```cmd
    python app.py
    ```
+3. 더 자세한 정보는 readme.txt참조
 
 # 📌 3. 폴더구조
 
@@ -50,9 +51,11 @@
 Backend/
  ├── .vscode/
  ├── img/
- ├── sql/
  ├── static/
  ├── templates/
+ ├── app.py
+ ├── Main_food.sql
  ├── requirements.txt
- └── README.md
+ ├── README.md
+ └── readme.txt
 ```
