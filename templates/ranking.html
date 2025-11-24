@@ -1,189 +1,224 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <title>맛집 랭킹</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>맛집 랭킹</title>
 
- 
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/form-style.css') }}"
+    />
+    <style>
+      .pagination {
+        text-align: center;
+        margin-top: 18px;
+      }
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/form-style.css') }}">
-</head>
-<body>
-  <!-- 상단 네비게이션 바 -->
-  <div class="top-nav">
-    <div class="nav-left">
-      <div class="form-icon">
-        <!-- 아이콘 대신 텍스트 -->
-        <strong>🍽️</strong>
-      </div>
-      <div class="form-title-group">
-        <div class="form-title-text">맛집 랭킹</div>
-      </div>
-    </div>
+      .pagination a {
+        margin: 0 4px;
+        padding: 6px 10px;
+        color: #1a73e8;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+      }
 
-    <div class="nav-center">
-   
-    </div>
+      .pagination a:hover {
+        background-color: #e8f0fe;
+      }
 
-    <div class="nav-right">
-      <button class="publish-btn" id="refresh-btn">랭킹 새로고침</button>
-      <button class="more-btn">⋮</button>
-      <button class="publish-btn" id="logout-btn">로그아웃</button>
-    </div>
-  </div>
-
-  <!-- 메인 콘텐츠 영역 -->
-  <div class="main-content">
-    
-    <div class="tab-menu">
-      <button class="tab-btn active">랭킹</button>
-      <button class="tab-btn" id="inquiry-tab">문의</button>
-    </div>
-
-    <!-- 폼 컨테이너 -->
-    <div class="form-container">
-      <!-- 상단 설명 카드 -->
-      <div class="form-card">
-        <div class="form-header">
-          <input
-            class="form-title-input"
-            type="text"
-            value="맛집 랭킹 결과"
-            readonly
-          />
-          <div class="form-description">
-            <input
-              class="form-description-input"
-              type="text"
-              value="사용자 리뷰를 기반으로 계산된 베이지안 점수 순 랭킹입니다."
-              readonly
-            />
-          </div>
+      .pagination .active {
+        background-color: #1a73e8;
+        color: white;
+        font-weight: bold;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top-nav">
+      <div class="nav-left">
+        <div class="form-icon">
+          <strong>🍽️</strong>
+        </div>
+        <div class="form-title-group">
+          <div class="form-title-text">맛집 랭킹</div>
         </div>
       </div>
 
-   
-      <div id="rank-list">
-       
-      </div>
+      <div class="nav-center"></div>
 
-     
-      <div id="rank-loading" style="margin-top: 12px; color: #5f6368;">
-        랭킹을 불러오는 중입니다...
-      </div>
-      <div id="rank-error" style="margin-top: 12px; color: #d93025; display: none;">
-        랭킹을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.
+      <div class="nav-right">
+        <button class="publish-btn" id="refresh-btn">랭킹 새로고침</button>
+        <button class="more-btn">⋮</button>
+        <button class="publish-btn" id="logout-btn">로그아웃</button>
       </div>
     </div>
-  </div>
-
-<script>
-const API_URL = "/api/rank?limit=20&use_adv=1";
-
-  const rankListEl = document.getElementById("rank-list");
-  const loadingEl = document.getElementById("rank-loading");
-  const errorEl = document.getElementById("rank-error");
-  const refreshBtn = document.getElementById("refresh-btn");
-
-  async function loadRanking() {
-   
-    loadingEl.style.display = "block";
-    errorEl.style.display = "none";
-    rankListEl.innerHTML = "";
-
-    try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
-
-      
-      loadingEl.style.display = "none";
-
-      
-      if (!Array.isArray(data) || data.length === 0) {
-        rankListEl.innerHTML =
-          '<div style="margin-top: 8px; color:#5f6368;">표시할 랭킹 데이터가 없습니다.</div>';
-        return;
-      }
-
-     
-      data.forEach((store, index) => {
-        const card = document.createElement("div");
-        card.className = "question-card";
-
-        card.innerHTML = `
-          <div class="question-content">
-            <div class="question-header">
-              <div class="question-title-input" style="border-bottom:none;">
-                ${index + 1}위 · ${store.name || "이름 없음"}
-              </div>
-            </div>
-
-            <div class="question-options">
-              <div class="option-item">
-                <span>평균 평점: <strong>${Number(store.avg_rating).toFixed(2)}</strong></span>
-              </div>
-              <div class="option-item">
-                <span>리뷰 수: <strong>${store.review_cnt}</strong>개</span>
-              </div>
-              <div class="option-item">
-                <span>랭킹 점수: <strong>${Number(store.score).toFixed(3)}</strong></span>
-              </div>
-              <div class="option-item">
-                <span>거리: <strong>${store.distance_km}</strong> km</span>
-              </div>
-
-              <!-- 메뉴 / 상세 보기 버튼 -->
-              <div class="option-item">
-                <button class="publish-btn" onclick="location.href='/ranking/store_info/${store.store_id}'">
-                  메뉴 / 상세 보기
-                </button>
-              </div>
+    <div class="main-content">
+      <div class="tab-menu">
+        <button class="tab-btn active">랭킹</button>
+        <button class="tab-btn" id="inquiry-tab">문의</button>
+      </div>
+      <div class="form-container">
+        <div class="form-card">
+          <div class="form-header">
+            <input
+              class="form-title-input"
+              type="text"
+              value="맛집 랭킹 결과"
+              readonly
+            />
+            <div class="form-description">
+              <input
+                class="form-description-input"
+                type="text"
+                value="사용자 리뷰를 기반으로 계산된 베이지안 점수 순 랭킹입니다."
+                readonly
+              />
             </div>
           </div>
-        `;
+        </div>
 
-        rankListEl.appendChild(card);
+        <div id="rank-list"></div>
+        <div id="pagination"></div>
+
+        <div id="rank-loading" style="margin-top: 12px; color: #5f6368">
+          랭킹을 불러오는 중입니다...
+        </div>
+        <div
+          id="rank-error"
+          style="margin-top: 12px; color: #d93025; display: none"
+        >
+          랭킹을 불러오는 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const PAGE_SIZE = 20;
+      let currentPage = 1;
+      let totalPages = 1;
+
+      const rankListEl = document.getElementById("rank-list");
+      const loadingEl = document.getElementById("rank-loading");
+      const errorEl = document.getElementById("rank-error");
+
+      async function loadTotalCount() {
+        const res = await fetch("/api/rank/count");
+        const data = await res.json();
+        totalPages = Math.ceil(data.count / PAGE_SIZE);
+      }
+
+      async function loadRanking(page = 1) {
+        currentPage = page;
+        const offset = (page - 1) * PAGE_SIZE;
+        const API_URL = `/api/rank?limit=${PAGE_SIZE}&offset=${offset}&use_adv=1`;
+
+        loadingEl.style.display = "block";
+        errorEl.style.display = "none";
+        rankListEl.innerHTML = "";
+
+        try {
+          const res = await fetch(API_URL);
+          const data = await res.json();
+          loadingEl.style.display = "none";
+
+          if (!Array.isArray(data) || data.length === 0) {
+            rankListEl.innerHTML =
+              '<div style="margin-top: 8px; color:#5f6368;">표시할 데이터가 없습니다.</div>';
+            return;
+          }
+
+          data.forEach((store, index) => {
+            const card = document.createElement("div");
+            card.className = "question-card";
+            const globalRank = (page - 1) * PAGE_SIZE + (index + 1);
+
+            card.innerHTML = `
+            <div class="question-content">
+              <div class="question-header">
+                <div class="question-title-input" style="border-bottom:none;">
+                  ${globalRank}위 · ${store.name}
+                </div>
+              </div>
+              <div class="question-options">
+                <div class="option-item">평균 평점: <strong>${Number(
+                  store.avg_rating
+                ).toFixed(2)}</strong></div>
+                <div class="option-item">리뷰 수: <strong>${
+                  store.review_cnt
+                }</strong>개</div>
+                <div class="option-item">점수: <strong>${Number(
+                  store.score
+                ).toFixed(3)}</strong></div>
+                <div class="option-item">거리: <strong>${
+                  store.distance_km
+                }</strong> km</div>
+                <div class="option-item">
+                  <button class="publish-btn" onclick="location.href='/ranking/store_info/${
+                    store.store_id
+                  }'">
+                    메뉴 / 상세 보기
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+            rankListEl.appendChild(card);
+          });
+
+          renderPagination();
+        } catch (err) {
+          loadingEl.style.display = "none";
+          errorEl.style.display = "block";
+        }
+      }
+
+      function renderPagination() {
+        const paginationEl = document.getElementById("pagination");
+        let html = `<div class="pagination">`;
+
+        for (let i = 1; i <= totalPages; i++) {
+          if (i === currentPage) {
+            html += `<a class="active">${i}</a>`;
+          } else {
+            html += `<a onclick="loadRanking(${i})">${i}</a>`;
+          }
+        }
+
+        html += `</div>`;
+
+        paginationEl.innerHTML = html;
+      }
+
+      (async () => {
+        await loadTotalCount();
+        loadRanking(1);
+      })();
+      document.getElementById("refresh-btn").addEventListener("click", () => {
+        currentPage = 1;
+        loadRanking(1);
       });
-    } catch (err) {
-      console.error("랭킹 불러오기 실패:", err);
-      loadingEl.style.display = "none";
-      errorEl.style.display = "block";
-    }
-  }
+      document.getElementById("inquiry-tab").addEventListener("click", () => {
+        window.location.href = "inquiry";
+      });
 
- 
-  loadRanking();
+      function logout() {
+        if (confirm("로그아웃 하시겠습니까?")) {
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_id");
+          localStorage.removeItem("user_name");
+          localStorage.removeItem("isAdmin");
+          localStorage.removeItem("adminId");
+          localStorage.removeItem("admin_name");
+          localStorage.removeItem("adminName");
+          localStorage.removeItem("adminName");
+          window.location.href = "/login";
+        }
+      }
 
-  // 상단 "랭킹 새로고침" 버튼
-  refreshBtn.addEventListener("click", () => {
-    loadRanking();
-  });
-</script>
-  <script>
-  document.getElementById("inquiry-tab").addEventListener("click", () => {
-    window.location.href = "inquiry";
-  });
-
-  
-  function logout() {
-    if (confirm("로그아웃 하시겠습니까?")) {
-      
-      localStorage.removeItem("token");
-      localStorage.removeItem("user_id");
-      localStorage.removeItem("user_name");
-      localStorage.removeItem("isAdmin");
-      localStorage.removeItem("adminId");
-      localStorage.removeItem("admin_name");
-      localStorage.removeItem("adminName");
-      
-      // 로그인 페이지로 이동
-      window.location.href = "/login";
-    }
-  }
-
-  // 로그아웃 버튼 클릭 시 로그아웃
-  document.getElementById("logout-btn").addEventListener("click", logout);
-</script>
-
-</body>
+      document.getElementById("logout-btn").addEventListener("click", logout);
+    </script>
+  </body>
 </html>

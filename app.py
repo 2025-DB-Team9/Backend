@@ -756,6 +756,21 @@ def create_review():
     return jsonify({"message": "리뷰가 작성되었습니다.", "review_id": review_id}), 201
 
 # ======================
+# 랭킹 개수 조회
+# GET /api/rank/count
+# ======================
+@app.route("/api/rank/count", methods=["GET"])
+def api_rank_count():
+    conn = get_connection()
+    try:
+        with conn.cursor() as cur:
+            cur.execute("SELECT COUNT(*) AS cnt FROM store")
+            row = cur.fetchone()
+        return jsonify({"count": row["cnt"]})
+    finally:
+        conn.close()
+
+# ======================
 # 실행
 # ======================
 if __name__ == "__main__":
