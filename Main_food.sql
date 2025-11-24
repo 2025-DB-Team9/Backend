@@ -834,9 +834,9 @@ INSERT INTO review (user_id, store_id, content, rating) VALUES
 (1,35,'종류가 다양하고, 직원 친절하심~~',4);
 
 -- 테스트 문의
-INSERT INTO inquiry(user_id, title,  content, field) VALUES
-(1, '테스트 문의1', '테스트 입니다.', '리뷰'),
-(2, '테스트 문의2', '계정을 지워주세요', '계정');
+INSERT INTO inquiry(user_id, title, writer,content, field) VALUES
+(1, '테스트 문의1','테스트 입니다.', '테스트유저1','리뷰'),
+(2, '테스트 문의2', '계정을 지워주세요', '집가는 유저2','계정');
 
 -- 테스트 답변
 UPDATE inquiry
